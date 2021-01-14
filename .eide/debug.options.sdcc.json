@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "beforeBuildTasks": [],
+  "afterBuildTasks": [
+    {
+      "name": "clean",
+      "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+    },
+    {
+      "name": "output bin file",
+      "command": "\"${exeDir}\\hex2bin.exe\" -b -c \"${outDir}\\${targetName}.hex\""
+    }
+  ],
+  "global": {
+    "device": "mcs51",
+    "optimize-type": "speed",
+    "use-non-free": false,
+    "specific-options": ["--model-small", "--iram-size 256", "--xram-size 1024", "--code-size 0x3000"]
+  },
+  "c/cpp-compiler": {
+    "language-c": "c99"
+  },
+  "asm-compiler": {},
+  "linker": {
+    "$mainFileName": "main"
+  }
+}

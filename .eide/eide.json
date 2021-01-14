@@ -1,0 +1,68 @@
+{
+    "name": "SimPad_Firmware_8051_re",
+    "type": "C51",
+    "mode": "Debug",
+    "toolchain": "SDCC",
+    "uploader": "stcgal",
+    "dependenceList": [
+        {
+            "groupName": "custom",
+            "depList": [
+                {
+                    "name": "default",
+                    "incList": [],
+                    "libList": [],
+                    "sourceDirList": [],
+                    "defineList": []
+                }
+            ]
+        },
+        {
+            "groupName": "build-in",
+            "depList": [
+                {
+                    "name": "default",
+                    "incList": [],
+                    "libList": [],
+                    "sourceDirList": [],
+                    "defineList": [
+                        "DEBUG"
+                    ]
+                },
+                {
+                    "name": "toolchain",
+                    "incList": [
+                        "c:\\Program Files\\SDCC\\include",
+                        "c:\\Program Files\\SDCC\\non-free\\include"
+                    ],
+                    "sourceDirList": [],
+                    "libList": [
+                        "c:\\Program Files\\SDCC\\lib"
+                    ],
+                    "defineList": []
+                }
+            ]
+        }
+    ],
+    "compileConfig": {
+        "options": "null"
+    },
+    "srcDirs": [
+        ".\\src"
+    ],
+    "excludeList": [],
+    "outDir": ".\\build",
+    "deviceName": null,
+    "packDir": null,
+    "uploadConfig": {
+        "bin": ".\\build\\Debug\\SimPad_Firmware_8051_re.hex",
+        "eepromImgPath": "null",
+        "options": ".eide/stc.flash.json"
+    },
+    "miscInfo": {
+        "uid": "eb39b60afbce953d857c3ca28227a1d0",
+        "lastTelTime": 1610609776058,
+        "lastBuildTime": 1610617975580
+    },
+    "version": "1.0"
+}
