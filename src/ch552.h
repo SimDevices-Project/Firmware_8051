@@ -26,6 +26,8 @@ typedef __xdata uint8_v         uint8_xv;
 typedef __pdata uint8_v         uint8_pv;
 typedef __code const uint8_t    uint8_c;
 
+typedef __code const uint8_t    *puint8_c;
+
 /*----- SFR --------------------------------------------------------------*/
 /*  sbit are bit addressable, others are byte addressable */
 

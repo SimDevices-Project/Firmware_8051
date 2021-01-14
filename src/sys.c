@@ -139,6 +139,41 @@ uint32_t sysGetTickCount() {
 }
 
 /*
+ *  获取芯片 ID 号并校验
+ */
+uint32_t getChipID( void )
+{
+    uint8_t	d0, d1;
+    uint16_t	xl, xh;
+    E_DIS = 1;                                                                  //避免进入中断
+    d0 = *(puint8_c)( ROM_CHIP_ID_LO + 0 );
+    d1 = *(puint8_c)( ROM_CHIP_ID_LO + 1 );                                    //ID号低字
+    xl = ( d1 << 8 ) | d0;
+    d0 = *(puint8_c)( ROM_CHIP_ID_LO + 2 );
+    d1 = *(puint8_c)( ROM_CHIP_ID_LO + 3 );                                    //ID号高字
+    xh = ( d1 << 8 ) | d0;
+    E_DIS = 0;
+    return( ( (uint32_t)xh << 16 ) | xl );
+}
+
+/*
+ *  转换 16 进制数字为字符
+ */
+uint8_t hexToChar(uint8_t bHex)
+{
+	bHex = bHex & 0x0F;
+	if(bHex<=9)
+	{
+		bHex += 0x30;
+	}
+	else
+	{
+		bHex += 0x37;
+	}
+	return bHex;
+}
+
+/*
  * 通过RGB565数据和一个字节的扩展数据得到完整的RGB888
  */
 uint32_t sysGetRGB(uint16_t color, uint8_t extend) {

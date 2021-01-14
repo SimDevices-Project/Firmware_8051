@@ -17,6 +17,9 @@ void	delay_ms(uint16_t n);                  // 以mS为单位延时
 void    sysTickConfig();
 uint32_t sysGetTickCount();
 
+uint32_t getChipID();
+uint8_t hexToChar(uint8_t bHex);
+
 //             无宏功能      按下触发宏    抬起触发宏   按住触发宏
 typedef enum { KeyNone = 0, KeyDown = 1, KeyUp = 2, KeyPress = 3 } KeyMode;
 

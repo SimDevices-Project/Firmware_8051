@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ch552.h"
+#include "sys.h"
 #include "bsp.h"
 
 #define THIS_ENDP0_SIZE DEFAULT_ENDP0_SIZE
@@ -250,7 +251,13 @@ const uint8_c usbManuDesc[] = { 0x0A, 0x03, 'N', 0, 'S', 0, 'D', 0, 'N', 0 };
     const uint8_c usbProdDesc[] = { 0x18, 0x03, 'S', 0, 'i', 0, 'm', 0, 'P', 0, 'a', 0, 'd', 0, ' ', 0, 'N', 0, 'u', 0, 'l', 0, 'l', 0 };
 #endif
 
-const uint8_c usbSerialDesc[] = { 0x0A, 0x03, '0', 0, '0', 0, '0', 0, '0', 0 };
+uint8_x usbSerialDesc[] = {0x12,0x03,
+    0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,
+};
+
 #ifdef USE_EXT_STR
 const uint8_c usbCfgStrDesc[] = { 0x08, 0x03, 'U', 0, 'S', 0, 'B', 0 };
 const uint8_c usbKeyStrDesc[] = { 0x08, 0x03, 'K', 0, 'e', 0, 'y', 0 };
@@ -266,11 +273,14 @@ uint8_x __at (0x0088) Ep3Buffer[2 * MAX_PACKET_SIZE];                           
 // 自动分配地址从0x0108开始，需修改make文件
 uint8_x HIDMouse[4] = { 0 };                                                                //鼠标数据
 /*
-    byte 0: control key
+    byte 0: HID 数据包模式 ID
+    byte 1:
+        media key
+        control key
         bit 0-7: lCtrl, lShift, lAlt, lGUI, rCtrl, rShift, rAlt, rGUI
-    byte 1: multimedia key / or reversed
-        bit 0-7: play, pause, next, prev, stop, mute, vol+, vol-
-    byte 2-9: standard key
+    byte 2:
+        media key / reversed
+    byte 3-9: standard key
 */
 uint8_x HIDKey[10] = { 0 };                                                                 //键盘数据
 uint8_x HIDInput[HID_BUF] = { 0 };                                                          //自定义HID接收缓冲
@@ -317,18 +327,18 @@ void __usbDeviceInterrupt() __interrupt (INT_NO_USB) __using (1) {
 						SetupReqCode = UsbSetupBuf->bRequest;
 						if ((UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK) != USB_REQ_TYP_STANDARD) { /* 非标准请求 */
                             switch (SetupReqCode) {
-                                case 0x01://GetReport
-                                    break;
-                                case 0x02://GetIdle
-                                    break;
-                                case 0x03://GetProtocol
-                                    break;
-                                case 0x09://SetReport
-                                    break;
-                                case 0x0A://SetIdle
-                                    break;
-                                case 0x0B://SetProtocol
-                                    break;
+                                // case 0x01://GetReport
+                                //     break;
+                                // case 0x02://GetIdle
+                                //     break;
+                                // case 0x03://GetProtocol
+                                //     break;
+                                // case 0x09://SetReport
+                                //     break;
+                                // case 0x0A://SetIdle
+                                //     break;
+                                // case 0x0B://SetProtocol
+                                //     break;
                                 default:
                                     len = 0xFF;  								            /*命令不支持*/
                                     break;
@@ -573,6 +583,19 @@ void __usbDeviceInterrupt() __interrupt (INT_NO_USB) __using (1) {
     ET2 = 1;
 }
 
+/**
+ * 准备 USB 设备序列号描述符
+ */
+void usbSerialDescInit(){
+    uint8_t *pointer = &usbSerialDesc[16];
+    uint32_t chipID= getChipID();
+    for(uint8_t i = 0; i < 8; i++){
+        *pointer = hexToChar(chipID);
+        pointer -= 2;
+        chipID = chipID >> 4;
+    }
+}
+
 void usbDevInit() {
 	IE_USB = 0;
 	USB_CTRL = 0x00;                                                           // 先设定USB设备模式
@@ -606,20 +629,22 @@ void usbDevInit() {
     UEP2_T_LEN = 0;
     UEP3_T_LEN = 0;
 
+    usbSerialDescInit();
+
     FLAG = 1;
 }
 
-void Enp1IntIn() {
-    memcpy(Ep1Buffer, HIDKey, sizeof(HIDKey));                                  //加载上传数据
-    UEP1_T_LEN = sizeof(HIDKey);                                                //上传数据长度
-    UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                   //有数据时上传数据并应答ACK
-}
+// void Enp1IntIn() {
+//     memcpy(Ep1Buffer, HIDKey, sizeof(HIDKey));                                  //加载上传数据
+//     UEP1_T_LEN = sizeof(HIDKey);                                                //上传数据长度
+//     UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                   //有数据时上传数据并应答ACK
+// }
 
-void Enp2IntIn( ) {
-    memcpy(Ep2Buffer, HIDMouse, sizeof(HIDMouse));                              //加载上传数据
-    UEP2_T_LEN = sizeof(HIDMouse);                                              //上传数据长度
-    UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                   //有数据时上传数据并应答ACK
-}
+// void Enp2IntIn( ) {
+//     memcpy(Ep2Buffer, HIDMouse, sizeof(HIDMouse));                              //加载上传数据
+//     UEP2_T_LEN = sizeof(HIDMouse);                                              //上传数据长度
+//     UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                   //有数据时上传数据并应答ACK
+// }
 
 void Enp3IntIn( ) {
     Ep3Buffer[MAX_PACKET_SIZE] = 0xAA;

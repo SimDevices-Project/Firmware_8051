@@ -109,7 +109,7 @@ void __eeprom_write(uint16_t addr, uint8_t data) {
     __eeprom_wr(data);
     __eeprom_ack();
     __eeprom_stop();
-    delay(2);
+    delay_ms(2);
     ROM_WP = 1; delay_us(5);
 }
 
