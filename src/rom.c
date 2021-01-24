@@ -143,14 +143,15 @@ volatile __bit __rom_dummy;
  * 内部存储器写入
  */
 void __flash_write(uint8_t addr, uint8_t data) {
-    addr &= (FLASH_SIZE - 1);
-    uint8_t offset = addr << 1;
+    // addr &= (FLASH_SIZE - 1);
+    // uint8_t offset = addr << 1;
+    addr <<= 1;
     SAFE_MOD = 0x55;
     SAFE_MOD = 0xAA;
     GLOBAL_CFG |= bDATA_WE;
-    ROM_ADDR = DATA_FLASH_ADDR + offset;
+    ROM_ADDR = DATA_FLASH_ADDR + addr;
     ROM_DATA_L = data;
-    ROM_CTRL = 0x9A;
+    ROM_CTRL = ROM_CMD_WRITE;
     SAFE_MOD = 0x55;
     SAFE_MOD = 0xAA;
     GLOBAL_CFG &= ~bDATA_WE;
@@ -160,10 +161,11 @@ void __flash_write(uint8_t addr, uint8_t data) {
  * 内部存储器读取
  */
 uint8_t __flash_read(uint8_t addr) {
-    addr &= (FLASH_SIZE - 1);
-    uint8_t offset = addr << 1;
-    ROM_ADDR = DATA_FLASH_ADDR + offset;
-    ROM_CTRL = 0x8E;
+    // addr &= (FLASH_SIZE - 1);
+    // uint8_t offset = addr << 1;
+    addr <<= 1;
+    ROM_ADDR = DATA_FLASH_ADDR + addr;
+    ROM_CTRL = ROM_CMD_READ;
     return ROM_DATA_L;
 }
 
@@ -198,15 +200,15 @@ void romWrite8i(uint8_t addr, uint8_t data) {
  * 从内部存储器读取一个字
  */
 uint16_t romRead16i(uint8_t addr) {
-    return ((uint16_t) __flash_read(addr)) | (((uint16_t) __flash_read(addr + 1)) << 8);
+    return ((uint16_t)__flash_read(addr)) << 8 | ((uint16_t)__flash_read(addr + 1));
 }
 
 /*
  * 向内部存储器写入一个字
  */
 void romWrite16i(uint8_t addr, uint16_t data) {
-    __flash_write(addr, data & 0xFF);
-    __flash_write(addr + 1, (data >> 8) & 0xFF);
+    __flash_write(addr, data >> 8);
+    __flash_write(addr + 1, data & 0xFF);
 }
 
 /*
@@ -236,7 +238,7 @@ void romWrite8e(uint16_t addr, uint8_t data) {
  */
 uint16_t romRead16e(uint16_t addr) {
 #if defined(HAS_ROM)
-    return ((uint16_t) __eeprom_read(addr)) | (((uint16_t) __eeprom_read(addr + 1)) << 8);
+    return ((uint16_t) __eeprom_read(addr)) << 8 | ((uint16_t) __eeprom_read(addr + 1));
 #else
     return addr == 0; // Dummy thing
 #endif
@@ -247,8 +249,8 @@ uint16_t romRead16e(uint16_t addr) {
  */
 void romWrite16e(uint16_t addr, uint16_t data) {
 #if defined(HAS_ROM)
-    __eeprom_write(addr, data & 0xFF);
-    __eeprom_write(addr + 1, (data >> 8) & 0xFF);
+    __eeprom_write(addr, (data >> 8) & 0xFF);
+    __eeprom_write(addr + 1, data & 0xFF);
 #else
     __rom_dummy = addr == 0 && data == 0; // Dummy thing
 #endif

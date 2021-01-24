@@ -6,8 +6,9 @@
 
 #include <string.h>
 
-volatile uint32_i sysTickCount = 0; // 系统刻计数器
+// volatile uint32_i sysTickCount = 0; // 系统刻计数器
 static __xdata SysConfig sysConfig; // 系统配置存储
+uint8_t sysMsCounter = 0;
 
 /*
  * 系统时钟配置
@@ -107,20 +108,21 @@ void delay_ms(uint16_t n) {
 }
 
 /*
- * 刻计数器更新中断
+ * 刻计数器更新中断 - 定时器2，去抖计算
  * 需要注意的是，非总线LED驱动也使用此中断，这种情况下刻计数器更新在 rgb.c 内实现
  */
 #if !defined(SIMPAD_V2)
 void __tim2Interrupt() __interrupt (INT_NO_TMR2) __using (2) {
     if (TF2) {
         TF2 = 0;
-        sysTickCount += 1;
+        // sysTickCount += 1;
+        sysMsCounter +=1;
     }
 }
 #endif
 
 /*
- * 系统刻计数初始化
+ * 系统刻计数初始化 - 定时器2
  */
 void sysTickConfig() {
 #if !defined(SIMPAD_V2)
@@ -134,9 +136,9 @@ void sysTickConfig() {
 /*
  * 获取当前刻
  */
-uint32_t sysGetTickCount() {
-    return sysTickCount;
-}
+// uint32_t sysGetTickCount() {
+//     return sysTickCount;
+// }
 
 /*
  *  获取芯片 ID 号并校验
@@ -192,34 +194,37 @@ uint32_t sysGetRGB(uint16_t color, uint8_t extend) {
  */
 void sysLoadConfig() {
     memset(&sysConfig, 0x00, sizeof(SysConfig));
-
-    uint16_t btc = 0, tmp = 0, addr = 0;
-    btc = romRead16i(0x00);                     // BTC
-    for (uint8_t i = 0; i < KEY_COUNT; i++) {
-        KEY_CFG(i).mode = (KeyMode) ((btc >> (2 * i)) & 0x3);
-        tmp = romRead16i(0x02 + i * 4);         // BTx
-        KEY_CFG(i).marco = (tmp & 0x8000) != 0;
-        if (!KEY_CFG(i).marco) {
-            KEY_CFG(i).code = tmp & 0xFF;
-        } else {
-            addr = tmp & 0x7FFF;
-            tmp = romRead16i(0x04 + i * 4);     // BTxL
+    uint8_t i;
+    uint16_t  tmp = 0, addr = 0;
+    for (i = 0; i < KEY_COUNT; i++) {
+        KEY_CFG(i).mode = (KeyMode) romRead8i(i);
+        tmp = romRead16i(0x08 + i * 4);         // BTx
+        // KEY_CFG(i).marco = (tmp & 0x8000) != 0;
+        KEY_CFG(i).codeL = tmp & 0xFF;
+        KEY_CFG(i).codeH = tmp >> 8;
+        tmp = romRead16i(0x0A + i * 4);     // BTxL
+        KEY_CFG(i).codeexL = tmp & 0xFF;
+        KEY_CFG(i).codeexH = tmp >> 8;
+        if (KEY_CFG(i).mode != 0x00) {
+            addr = KEY_CFG(i).codeH << 8 | KEY_CFG(i).codeL; // & 0x7FFF;
+            // tmp = romRead16i(0x04 + i * 4);     // BTxL
             for (uint16_t j = 0; j < tmp; j++) {
                 if (addr + j < FLASH_SIZE)
                     KEY_CFG(i).program[j] = romRead8i(addr + j);
                 else
                     KEY_CFG(i).program[j] = romRead8e(addr + j);
             }
-            KEY_CFG(i).length = tmp;
+            // KEY_CFG(i).length = tmp;
         }
+
     }
 
-    for (uint8_t i = 0; i < LED_COUNT; i++) {
-        addr = romRead16i(0x16 + i * 4);        // LEDx
-        tmp = romRead16i(0x18 + i * 4);         // LEDxL
+    for (i = 0; i < LED_COUNT; i++) {
+        addr = romRead16i(0x28 + i * 4);        // LEDx
+        tmp = romRead16i(0x2A + i * 4);         // LEDxL
         LED_CFG(i).marco = (addr != 0xFFFF);
         if (!LED_CFG(i).marco) {
-            addr = romRead8i(0x26 + i * 1);     // LEDxEX
+            addr = romRead8i(0x38 + i * 1);     // LEDxEX
             LED_CFG(i).color = sysGetRGB(tmp, addr);
         } else {
             for (uint16_t j = 0; j < tmp; j++) {

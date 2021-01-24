@@ -15,20 +15,28 @@ void	delay_us(uint16_t n);               // 以uS为单位延时
 void	delay_ms(uint16_t n);                  // 以mS为单位延时
 
 void    sysTickConfig();
-uint32_t sysGetTickCount();
+// uint32_t sysGetTickCount();
 
 uint32_t getChipID();
 uint8_t hexToChar(uint8_t bHex);
 
-//             无宏功能      按下触发宏    抬起触发宏   按住触发宏
-typedef enum { KeyNone = 0, KeyDown = 1, KeyUp = 2, KeyPress = 3 } KeyMode;
+typedef enum // 按键模式
+{
+    KeyNone = 0, // 无宏功能
+    KeyDown = 1, // 按下触发宏
+    KeyUp = 2,   // 按下触发宏
+    KeyPress = 3, // 按住触发宏
+    KeyUpAndDown = 4 //按下和抬起分别触发一个宏
+} KeyMode;
 
 typedef struct { // 按键配置结构体
     KeyMode mode;
-    bool marco;
-    uint8_t code;
+    uint8_t codeH;
+    uint8_t codeL;
+    uint8_t codeexH;
+    uint8_t codeexL;
     uint8_t program[MARCO_MAX];
-    uint16_t length;
+    // uint16_t length;
 } KeyConfig;
 
 typedef struct { // LED配置结构体

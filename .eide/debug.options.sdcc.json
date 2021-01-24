@@ -15,7 +15,14 @@
     "device": "mcs51",
     "optimize-type": "speed",
     "use-non-free": false,
-    "specific-options": ["--model-small", "--iram-size 256", "--xram-size 1024", "--code-size 0x3000"]
+    "specific-options": [
+      "--model-small",
+      "--iram-size 256",
+      "--xram-size 1024",
+      "--code-size 0x3000",
+      "--opt-code-size",
+      "--xram-loc 0x00C8"
+    ]
   },
   "c/cpp-compiler": {
     "language-c": "c99"
