@@ -178,13 +178,13 @@ uint8_t hexToChar(uint8_t bHex)
 /*
  * 通过RGB565数据和一个字节的扩展数据得到完整的RGB888
  */
-uint32_t sysGetRGB(uint16_t color, uint8_t extend) {
-    uint32_t val = 0;
-    val = ((uint32_t) ((color & 0xF800) | ((extend & 0xE0) << 3))) << 8;
-    val |= ((uint32_t) ((color & 0x07E0) | (extend & 0x18))) << 5;
-    val |= ((color & 0x001F) << 3) | (extend & 0x07);
-    return val;
-}
+// uint32_t sysGetRGB(uint16_t color, uint8_t extend) {
+//     uint32_t val = 0;
+//     val = ((uint32_t) ((color & 0xF800) | ((extend & 0xE0) << 3))) << 8;
+//     val |= ((uint32_t) ((color & 0x07E0) | (extend & 0x18))) << 5;
+//     val |= ((color & 0x001F) << 3) | (extend & 0x07);
+//     return val;
+// }
 
 #define KEY_CFG(i)  (sysConfig.keyConfig[i])
 #define LED_CFG(i)  (sysConfig.ledConfig[i])
@@ -194,47 +194,26 @@ uint32_t sysGetRGB(uint16_t color, uint8_t extend) {
  */
 void sysLoadConfig() {
     memset(&sysConfig, 0x00, sizeof(SysConfig));
-    uint8_t i;
+    uint8_t i, point = 0;
     uint16_t  tmp = 0, addr = 0;
     for (i = 0; i < KEY_COUNT; i++) {
-        KEY_CFG(i).mode = (KeyMode) romRead8i(i);
-        tmp = romRead16i(0x08 + i * 4);         // BTx
+        KEY_CFG(i).mode = (KeyMode) romRead8i(point++);
+        // tmp = romRead16i(0x08 + i * 4);         // BTx
         // KEY_CFG(i).marco = (tmp & 0x8000) != 0;
-        KEY_CFG(i).codeL = tmp & 0xFF;
-        KEY_CFG(i).codeH = tmp >> 8;
-        tmp = romRead16i(0x0A + i * 4);     // BTxL
-        KEY_CFG(i).codeexL = tmp & 0xFF;
-        KEY_CFG(i).codeexH = tmp >> 8;
-        if (KEY_CFG(i).mode != 0x00) {
-            addr = KEY_CFG(i).codeH << 8 | KEY_CFG(i).codeL; // & 0x7FFF;
-            // tmp = romRead16i(0x04 + i * 4);     // BTxL
-            for (uint16_t j = 0; j < tmp; j++) {
-                if (addr + j < FLASH_SIZE)
-                    KEY_CFG(i).program[j] = romRead8i(addr + j);
-                else
-                    KEY_CFG(i).program[j] = romRead8e(addr + j);
-            }
-            // KEY_CFG(i).length = tmp;
-        }
-
+        KEY_CFG(i).codeHH = romRead8i(point++);
+        KEY_CFG(i).codeHL = romRead8i(point++);
+        // tmp = romRead16i(0x0A + i * 4);     // BTxL
+        KEY_CFG(i).codeLH = romRead8i(point++);
+        KEY_CFG(i).codeLL = romRead8i(point++);
     }
 
     for (i = 0; i < LED_COUNT; i++) {
-        addr = romRead16i(0x28 + i * 4);        // LEDx
-        tmp = romRead16i(0x2A + i * 4);         // LEDxL
-        LED_CFG(i).marco = (addr != 0xFFFF);
-        if (!LED_CFG(i).marco) {
-            addr = romRead8i(0x38 + i * 1);     // LEDxEX
-            LED_CFG(i).color = sysGetRGB(tmp, addr);
-        } else {
-            for (uint16_t j = 0; j < tmp; j++) {
-                if (addr + j < FLASH_SIZE)
-                    LED_CFG(i).program[j] = romRead8i(addr + j);
-                else
-                    LED_CFG(i).program[j] = romRead8e(addr + j);
-            }
-            LED_CFG(i).length = tmp;
-        }
+        LED_CFG(i).mode = romRead8i(point++);
+        LED_CFG(i).value0 = romRead8i(point++);
+        LED_CFG(i).value1 = romRead8i(point++);
+        LED_CFG(i).value2 = romRead8i(point++);
+        LED_CFG(i).bind = romRead8i(point++);
+        LED_CFG(i).trigger = (LEDTriggerMode) romRead8i(point++);
     }
 }
 

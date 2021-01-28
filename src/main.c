@@ -65,9 +65,10 @@ void main()
       usbReleaseAll();
 
       for (i = 0; i < KEY_COUNT; i++) {
-        if (cfg->keyConfig[i].mode == KeyNone) {
+        if (cfg->keyConfig[i].mode == KeyboardMouse) {
           if(keyState(i)){
-            usbSetKeycode(i + 2, cfg->keyConfig[i].codeL);
+            ctrlKey |= cfg->keyConfig[i].codeLH;
+            usbSetKeycode(i + 2, cfg->keyConfig[i].codeLL);
           }
         }
       }
