@@ -25,7 +25,12 @@ const uint8_c usbDevDesc[] = {
     0x01                        // 可能的配置数
 };
 
-/*HID类报表描述符*/
+/**
+ * @brief 键盘和其它混合设备描述符 \n
+ * Report ID 1 - 标准键盘 \n
+ * Report ID 2 - 多媒体键盘 \n
+ * Report ID 3 - 游戏控制器
+ */
 const uint8_c KeyRepDesc[] = {
     0x05, 0x01,       // Usage Page (Generic Desktop Ctrls)
     0x09, 0x06,       // Usage (Keyboard)
@@ -676,10 +681,10 @@ void Enp3IntIn( ) {
 }
 
 /**
- * @brief 设置标准8字节USB报表
+ * @brief 设置非标准混合设备USB报表
  * 
- * @param i 目标字节下标，0-7
- * @param key 要设置的报表KeyCode
+ * @param i 目标字节下标，0-9
+ * @param key 要设置的报表Code
  */
 void usbSetKeycode(uint8_t i, uint8_t key) {
     HIDKey[i] = key;

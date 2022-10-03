@@ -77,8 +77,8 @@ void main()
         }
       }
 
-      usbSetKeycode(0, ctrlKey);
-      usbSetKeycode(1, 0);
+      usbSetKeycode(0, 1);
+      usbSetKeycode(1, ctrlKey);
 
       usbPushKeydata();
 
