@@ -12,15 +12,20 @@ extern uint8_t HIDKey[];
 
 void __tim2Interrupt() __interrupt(INT_NO_TMR2) __using(2);
 
+#if KEY_COUNT <= 8
 uint8_t prevKey = 0;
 uint8_t activeKey;
+#elif KEY_COUNT <= 16
+uint16_t prevKey = 0;
+uint16_t activeKey;
+#endif
 
 /** @brief 标准8字节USB键盘报表，控制键字节 */
 uint8_t ctrlKey;
 
 void main()
 {
-  uint8_t i;
+  uint8_t i, j;
 
   sysClockConfig();
   delay_ms(20);
@@ -57,31 +62,57 @@ void main()
     for (i = 0; i < KEY_COUNT; i++)
     {
       activeKey <<= 1;
-      activeKey |= keyState(i);
+      activeKey |= isKeyActive(i);
     }
 
     if (prevKey != activeKey)
     {
-      ctrlKey = 0;
-      usbReleaseAll();
-
+      prevKey ^= activeKey;
       for (i = 0; i < KEY_COUNT; i++)
       {
-        if (cfg->keyConfig[i].mode == KeyboardMouse)
+        if ((prevKey >> i) & 0x01)
         {
-          if (keyState(i))
+          usbReleaseAll();
+          switch (cfg->keyConfig[i].mode)
           {
-            ctrlKey |= cfg->keyConfig[i].codeLH;
-            usbSetKeycode(i + 2, cfg->keyConfig[i].codeLL);
+          case KeyboardMouse:
+            ctrlKey = 0;
+            for (j = 0; j < KEY_COUNT; j++)
+            {
+              if (cfg->keyConfig[j].mode == KeyboardMouse)
+              {
+                if ((activeKey >> j) & 0x01)
+                {
+                  ctrlKey |= cfg->keyConfig[j].codeLH;
+                  usbSetKeycode(j + 2, cfg->keyConfig[j].codeLL);
+                }
+              }
+            }
+
+            usbSetKeycode(0, 1);
+            usbSetKeycode(1, ctrlKey);
+            break;
+          case Media:
+            for (j = 0; j < KEY_COUNT; j++)
+            {
+              if (cfg->keyConfig[j].mode == Media)
+              {
+                if ((activeKey >> j) & 0x01)
+                {
+                  usbSetKeycode(2, cfg->keyConfig[j].codeLH);
+                  usbSetKeycode(1, cfg->keyConfig[j].codeLL);
+                  break;
+                }
+              }
+            }
+            usbSetKeycode(0, 2);
+            break;
+          default:
+            break;
           }
+          usbPushKeydata();
         }
       }
-
-      usbSetKeycode(0, 1);
-      usbSetKeycode(1, ctrlKey);
-
-      usbPushKeydata();
-
       prevKey = activeKey;
     }
   }

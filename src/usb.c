@@ -306,7 +306,7 @@ uint8_x HIDMouse[4] = { 0 };                                                    
         control key
         bit 0-7: lCtrl, lShift, lAlt, lGUI, rCtrl, rShift, rAlt, rGUI
     byte 2:
-        media key / reversed
+        media key
     byte 3-9: standard key
 */
 uint8_x HIDKey[10] = { 0 };                                                                 //键盘数据
@@ -691,11 +691,13 @@ void usbSetKeycode(uint8_t i, uint8_t key) {
 }
 
 /**
- * 清空 HIDKey 上传缓冲区
+ * 清空 HID设备 上传缓冲区
  */
 void usbReleaseAll() {
     for (uint8_t i = 0; i < sizeof(HIDKey); i++)
         HIDKey[i] = 0x00;
+    for (uint8_t i = 0; i < sizeof(HIDMouse); i++)
+        HIDMouse[i] = 0x00;
 }
 
 /**

@@ -36,7 +36,7 @@ void debounceUpdate(){
 #endif
 }
 
-__bit keyState(uint8_t i) {
+__bit isKeyActive(uint8_t i) {
   return debResult[i]; // & 0x01;
 }
 

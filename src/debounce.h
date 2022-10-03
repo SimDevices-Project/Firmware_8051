@@ -9,6 +9,6 @@ typedef uint8_t debounce_type;
 
 void debounceInit();
 void debounceUpdate();
-__bit keyState(uint8_t i);
+__bit isKeyActive(uint8_t i);
 
 #endif

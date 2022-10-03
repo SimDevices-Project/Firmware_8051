@@ -7,7 +7,7 @@
 void usbDevInit();                              // USB设备初始化
 
 void usbSetKeycode(uint8_t i, uint8_t key);     // 设置键值
-void usbReleaseAll();                           // 抬起所有按键
+void usbReleaseAll();                           // 清除上传缓冲区
 void usbPushKeydata();                          // 上传按键数据
 
 #define KEY_BUFFER 16                           // 键盘端点最大缓冲大小
