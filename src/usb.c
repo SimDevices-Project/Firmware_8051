@@ -675,6 +675,12 @@ void Enp3IntIn( ) {
     UEP3_CTRL = UEP3_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                   //有数据时上传数据并应答ACK
 }
 
+/**
+ * @brief 设置标准8字节USB报表
+ * 
+ * @param i 目标字节下标，0-7
+ * @param key 要设置的报表KeyCode
+ */
 void usbSetKeycode(uint8_t i, uint8_t key) {
     HIDKey[i] = key;
 }

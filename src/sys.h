@@ -59,8 +59,12 @@ typedef enum // 按键模式
 #define LED_ACTIVE_MODE_BREATHING_ONCE = 0x08 // 呼吸一次
 
 #endif
+
+/**
+ * @brief 按键配置结构体
+ */
 typedef struct
-{ // 按键配置结构体
+{
     KeyMode mode;
     uint8_t codeHH;
     uint8_t codeHL;
@@ -90,8 +94,11 @@ typedef struct
     LEDTriggerMode trigger;
 } LEDConfig;
 
+/**
+ * @brief 系统设置结构体
+ */
 typedef struct
-{ // 系统配置结构体
+{
     KeyConfig keyConfig[KEY_COUNT];
     LEDConfig ledConfig[LED_COUNT];
 } SysConfig;

@@ -69,9 +69,9 @@
 //#define INSTR_ENB_STRP
 
 /* 使能灯光渐变列表 */
-#define RGB_USE_GRAD_LIST
+//#define RGB_USE_GRAD_LIST
 /* 使能简化灯光渐变列表，CH552受存储空间限制，必须打开 */
-#define RGB_GRAD_LIST_LITE
+//#define RGB_GRAD_LIST_LITE
 
 __sfr   __at (0x90) P1;
 __sbit  __at (0x90) P10;
