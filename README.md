@@ -4,8 +4,6 @@
 
 The repository for firmware of SimPad devices designed based on the 8051 architecture.
 
-[PC-side Configurator](https://github.com/SimDevices-Project/simpad-control-panel)
-
 ## Compiling
 
 Currently, you need to install sdcc in order to compile the firmware correctly.
