@@ -79,6 +79,18 @@
 # To explicitly override the above, define any exceptions here; e.g.:
 # !my_customized_scatter_file.sct
 
-# EIDE butild output
-/build/
+# dot files
+/.vscode/launch.json
 /.eide/log
+/.eide.usr.ctx.json
+/.settings
+
+# project out
+/build
+/out
+/bin
+/obj
+
+# eide template
+*.ept
+*.eide-template
