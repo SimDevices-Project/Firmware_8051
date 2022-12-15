@@ -1,1 +1,46 @@
-{"name":"SimPad_Firmware_8051_re","type":"C51","mode":"Debug","toolchain":"SDCC","uploader":"stcgal","dependenceList":[{"groupName":"custom","depList":[{"name":"default","incList":[],"libList":[],"sourceDirList":[],"defineList":[]}]}],"compileConfig":{"options":"null"},"srcDirs":["./src"],"excludeList":[],"outDir":"build","deviceName":null,"packDir":null,"uploadConfig":{"bin":".\\build\\Debug\\SimPad_Firmware_8051_re.hex","eepromImgPath":"null","options":".eide/stc.flash.json","extraOptions":""},"miscInfo":{"uid":"eb39b60afbce953d857c3ca28227a1d0","lastTelTime":1610609776058,"lastBuildTime":1610940059942},"version":"3.0","virtualFolder":{"name":"<virtual_root>","files":[],"folders":[]},"uploadConfigMap":{},"targets":{}}
+{
+  "name": "SimPad_Firmware_8051_re",
+  "type": "C51",
+  "dependenceList": [],
+  "srcDirs": [
+    "src"
+  ],
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "eb39b60afbce953d857c3ca28227a1d0",
+    "lastTelTime": 1610609776058,
+    "lastBuildTime": 1610940059942
+  },
+  "version": "3.3",
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": []
+  },
+  "targets": {
+    "Debug": {
+      "excludeList": [],
+      "toolchain": "SDCC",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "stcgal",
+      "uploadConfig": {
+        "bin": ".\\build\\Debug\\SimPad_Firmware_8051_re.hex",
+        "eepromImgPath": "null",
+        "options": ".eide/stc.flash.json",
+        "extraOptions": ""
+      },
+      "uploadConfigMap": {},
+      "custom_dep": {
+        "name": "default",
+        "incList": [],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": []
+      }
+    }
+  }
+}

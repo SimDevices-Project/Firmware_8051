@@ -12,6 +12,8 @@
         "files.autoGuessEncoding": true,
         "C_Cpp.default.cppStandard": "c++14",
         "C_Cpp.default.cStandard": "c99",
-        "EIDE.ARM.Option.AutoGenerateRTE_Components": false
+        "EIDE.ARM.Option.AutoGenerateRTE_Components": false,
+        "EIDE.SourceTree.AutoSearchIncludePath": true,
+        "EIDE.SourceTree.AutoSearchObjFile": true
     }
 }

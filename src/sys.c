@@ -8,7 +8,7 @@
 
 // volatile uint32_i sysTickCount = 0; // 系统刻计数器
 static __xdata SysConfig sysConfig; // 系统配置存储
-uint8_t sysMsCounter = 0;
+uint8_t  sysMsCounter = 0; // 系统ms计数器
 
 /*
  * 系统时钟配置
