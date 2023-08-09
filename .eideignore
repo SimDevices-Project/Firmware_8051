@@ -1,0 +1,3 @@
+# ignore some file when pack eide template file
+.vscode/cpptools
+.vscode/c_cpp_properties.json

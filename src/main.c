@@ -1,12 +1,18 @@
-#include "ch552.h"
-#include "sys.h"
-#include "rom.h"
-#include "usb.h"
 #include "bsp.h"
-#include "rgb.h"
+#include "ch552.h"
 #include "debounce.h"
+#include "rgb.h"
+#include "rom.h"
+#include "sys.h"
+#include "usb.h"
+#ifdef TOUCH_COUNT
+#include "touchkey.h"
+#endif
 
 void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1); // USB中断定义
+#ifdef TOUCH_COUNT
+void __TK_int_ISR() __interrupt(INT_NO_TKEY) __using(1);        // TouchKey中断定义
+#endif
 
 // extern uint8_t FLAG;
 
@@ -16,11 +22,11 @@ extern uint8_t HIDKey[];
 void __tim2Interrupt() __interrupt(INT_NO_TMR2) __using(2);
 
 #if KEY_COUNT <= 8
-uint8_t prevKey = 0; //上一次扫描时的按键激活状态记录
-uint8_t activeKey; //最近一次扫描时的按键激活状态记录
+uint8_t prevKey = 0; // 上一次扫描时的按键激活状态记录
+uint8_t activeKey;   // 最近一次扫描时的按键激活状态记录
 #elif KEY_COUNT <= 16
-uint16_t prevKey = 0; //上一次扫描时的按键激活状态记录
-uint16_t activeKey; //最近一次扫描时的按键激活状态记录
+uint16_t prevKey = 0; // 上一次扫描时的按键激活状态记录
+uint16_t activeKey;   // 最近一次扫描时的按键激活状态记录
 #endif
 
 /** @brief 标准8字节USB键盘报表，控制键字节 */
@@ -28,7 +34,13 @@ uint8_t ctrlKey;
 
 void main()
 {
-  uint8_t i, j;
+  uint8_t  i, j;
+  uint16_t tmp;
+
+#ifdef MOTOR
+  uint16_t motorDelay = 0;
+  MOTOR               = 0;
+#endif
 
   sysClockConfig();
   delay_ms(20);
@@ -38,35 +50,59 @@ void main()
   delay_ms(300);
 #endif
 
+#ifdef TOUCH_COUNT
+  TK_Init(BIT4 | BIT5 | BIT6 | BIT7, 0, 1); /* Choose TIN2, TIN3, TIN4, TIN5 for touchkey input. enable interrupt. */
+  TK_SelectChannel(0);                      /* NOTICE: ch is not compatible with the IO actually. */
+#endif
+
   sysLoadConfig();
   SysConfig *cfg = sysGetConfig();
 
   usbDevInit();
   debounceInit();
-  rgbInit();
+  // rgbInit();
 
   EA = 1; // 启用中断
 
-  delay_ms(300);
+  delay_ms(100);
 
   usbReleaseAll();
   requestHIDData();
 
   sysTickConfig();
 
+  tmp = romRead16e(0x00);
+  romWrite16e(0x00, 0x8088);
   // 灯光测试Demo
-  rgbSet(0, 0x00FF0000);
-  rgbSet(1, 0x0000FF00);
-  rgbSet(2, 0x000000FF);
-  rgbSet(3, 0x00FFFFFF);
+  if(tmp == 0x8088) {
+    rgbSet(0, 0x00FFFFFF);
+  } else {
+    rgbSet(0, 0x00FF0000);
+  }
   rgbPush();
+  // rgbSet(0, 0x00FFFFFF);
+  // rgbSet(1, 0x00FFFFFF);
+  // rgbSet(2, 0x00FFFFFF);
+  // rgbSet(3, 0x00FFFFFF);
+  // rgbPush();
 
   sysMsCounter = 0;
   while (1)
   {
     while (sysMsCounter--)
     {
+#ifdef MOTOR
+      if (motorDelay)
+      {
+        motorDelay--;
+        if (motorDelay == 0)
+        {
+          MOTOR = 0;
+        }
+      }
+#endif
       debounceUpdate();
+      // rgbPush();
     }
 
     activeKey = 0;
@@ -75,24 +111,31 @@ void main()
       activeKey <<= 1;
       activeKey |= isKeyActive(i);
     }
-
     if (prevKey != activeKey)
     {
       prevKey ^= activeKey;
       for (i = 0; i < KEY_COUNT; i++)
       {
-        // 如果第i个键是被激活的
+        // 如果第i个键是被更改的
         if ((prevKey >> i) & 0x01)
         {
+#ifdef MOTOR
+          // 如果第i个键是被更改的，并且这个操作是激活
+          if ((activeKey >> i) & 0x01)
+          {
+            motorDelay = 5000;
+            MOTOR      = 1;
+          }
+#endif
           usbReleaseAll();
           switch (cfg->keyConfig[i].mode)
           {
           // 当被激活的按键类型是标准键盘按键时
-          case KeyboardMouse:
+          case Keyboard:
             ctrlKey = 0;
             for (j = 0; j < KEY_COUNT; j++)
             {
-              if (cfg->keyConfig[j].mode == KeyboardMouse)
+              if (cfg->keyConfig[j].mode == Keyboard)
               {
                 if ((activeKey >> j) & 0x01)
                 {
@@ -104,6 +147,8 @@ void main()
 
             usbSetKeycode(0, 1); // 报表位0设置为1，即标准键盘
             usbSetKeycode(1, ctrlKey);
+
+            usbPushKeydata(); // 发送 HID1 数据包
             break;
           // 当被激活的按键类型是多媒体按键时
           case Media:
@@ -120,11 +165,15 @@ void main()
               }
             }
             usbSetKeycode(0, 2); // 报表位0设置为2，即多媒体键盘
+
+            usbPushKeydata(); // 发送 HID1 数据包
+            break;
+          case Mouse:
+
             break;
           default:
             break;
           }
-          usbPushKeydata();
         }
       }
       prevKey = activeKey;

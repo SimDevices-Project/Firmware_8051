@@ -22,11 +22,11 @@ uint8_t hexToChar(uint8_t bHex);
 
 typedef enum // 按键模式
 {
-    KeyboardMouse = 0x00,      // 键鼠
+    Keyboard = 0x00,      // 键鼠
     Media = 0x01,              // 媒体
     Roller = 0x02,             // 滚轮
     GamepadButton = 0x03,      // 手柄按键
-    MouseMove = 0x04,          // 鼠标移动
+    Mouse = 0x04,          // 鼠标移动
     Absolute = 0x05,           // 绝对定位
     GamepadRocker = 0x06,      // 手柄摇杆
     MacroPressDown = 0xF0,     // 按下触发一次宏

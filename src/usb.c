@@ -267,7 +267,9 @@ const uint8_c usbManuDesc[] = { 0x0A, 0x03, 'S', 0, 'i', 0, 'm', 0, 'D', 0, 'e',
 #if defined(SIMPAD_V2_AE)
     const uint8_c usbProdDesc[] = { 0x12, 0x03, 'S', 0, 'i', 0, 'm', 0, 'P', 0, 'a', 0, 'd', 0, ' ', 0, '2', 0 };
 #elif defined(SIMPAD_NANO_AE)
-    const uint8_c usbProdDesc[] = { 0x18, 0x03, 'S', 0, 'i', 0, 'm', 0, 'P', 0, 'a', 0, 'd', 0, ' ', 0, 'N', 0, 'a', 0, 'n', 0, 'o', 0, ' '};
+    const uint8_c usbProdDesc[] = { 0x19, 0x03, 'S', 0, 'i', 0, 'm', 0, 'P', 0, 'a', 0, 'd', 0, ' ', 0, 'N', 0, 'a', 0, 'n', 0, 'o', 0};
+#elif defined(SIMPAD_TOUCH)
+    const uint8_c usbProdDesc[] = { 0x1A, 0x03, 'S', 0, 'i', 0, 'm', 0, 'P', 0, 'a', 0, 'd', 0, ' ', 0, 'T', 0, 'o', 0, 'u', 0, 'c', 0, 'h', 0};
 #elif defined(SIM_KEY)
     const uint8_c usbProdDesc[] = { 0x0E, 0x03, 'S', 0, 'i', 0, 'm', 0, 'K', 0, 'e', 0, 'y', 0 };
 #elif defined(SIMPAD_V2)
@@ -294,9 +296,9 @@ const uint8_c usbCusStrDesc[] = { 0x08, 0x03, 'C', 0, 'u', 0, 's', 0 };
 
 // DMA缓冲区必须对齐到偶地址，xRAM自动分配地址往后移动
 uint8_x __at (0x0000) Ep0Buffer[THIS_ENDP0_SIZE];                                           //端点0 OUT&IN缓冲区，必须是偶地址
-uint8_x __at (THIS_ENDP0_SIZE) Ep1Buffer[KEY_BUFFER];                                  //端点1 IN缓冲区,必须是偶地址
-uint8_x __at (THIS_ENDP0_SIZE + KEY_BUFFER) Ep2Buffer[MOUSE_BUFFER];                //端点2 IN缓冲区,必须是偶地址
-uint8_x __at (THIS_ENDP0_SIZE + KEY_BUFFER + MOUSE_BUFFER) Ep3Buffer[2 * HID_BUFFER];        //端点3 OUT&IN缓冲区,必须是偶地址
+uint8_x __at (THIS_ENDP0_SIZE) Ep1Buffer[KEY_BUFFER];                                       //端点1 IN缓冲区,必须是偶地址
+uint8_x __at (THIS_ENDP0_SIZE + KEY_BUFFER) Ep2Buffer[MOUSE_BUFFER];                        //端点2 IN缓冲区,必须是偶地址
+uint8_x __at (THIS_ENDP0_SIZE + KEY_BUFFER + MOUSE_BUFFER) Ep3Buffer[2 * HID_BUFFER];       //端点3 OUT&IN缓冲区,必须是偶地址
 // 自动分配地址从0x00C8开始，需修改make文件
 uint8_x HIDMouse[4] = { 0 };                                                                //鼠标数据
 /*
@@ -714,6 +716,24 @@ void usbPushKeydata() {
         memcpy(Ep1Buffer, HIDKey, len);
         UEP1_T_LEN = len;
         UEP1_CTRL = UEP1_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;
+    }
+}
+
+
+/**
+ * 上传 HIDMouse 数据包到上位机
+ */
+void usbPushMousedata() {
+    // while (FLAG == 0);
+    
+    uint8_t len = 0;
+    uint8_t type = HIDMouse[0];
+    if (type == 0x01) len = sizeof(HIDMouse);
+    else if (type == 0x02) len = 3;
+    if (type) {
+        memcpy(Ep2Buffer, HIDMouse, len);
+        UEP2_T_LEN = len;
+        UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;
     }
 }
 

@@ -15,14 +15,25 @@
     "global": {
         "device": "mcs51",
         "optimize-type": "speed",
-        "misc-controls": "--model-small --iram-size 256 --xram-size 1024 --code-size 0x3000 --opt-code-size --xram-loc 0x00C8"
+        "use-non-free": false,
+        "device-options": {
+            "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+            ]
+        }
     },
     "c/cpp-compiler": {
-        "language-c": "sdcc99"
+        "language-c": "c99",
+        "misc-controls": "--disable-warning 182"
     },
     "asm-compiler": {},
     "linker": {
         "$mainFileName": "main",
-        "output-format": "hex"
+        "output-format": "hex",
+        "misc-controls": "--xram-loc 0x0000"
     }
 }

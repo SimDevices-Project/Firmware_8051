@@ -3,11 +3,12 @@
 
 #ifndef __MULTI_COMPILE__
 /* 编译目标设置 开始 */
-#define SIMPAD_V2_AE
+//#define SIMPAD_V2_AE
 //#define SIMPAD_NANO_AE
-//#define SIM_KEY
+#define SIM_KEY
 //#define SIMPAD_V2
 //#define SIMPAD_NANO
+//#define SIMPAD_TOUCH
 /* 编译目标设置 结束 */
 #endif
 
@@ -16,49 +17,50 @@
 #define ROM_VERSION_MONTH   0x01
 #define ROM_VERSION_DATE    0x09
 
-#define BIT(n) BIT(1 << (n))
-
 /* 特性支持列表 */
-#ifndef __FEATURE_LIST_
-#define __FEATURE_LIST_
-    #define FEATURE_BASIC       BIT(7)  // 基本功能设置支持
-    #define FEATURE_KEY         BIT(6)  // 物理按键
-    #define FEATURE_TOUCH_KEY   BIT(5)  // 触摸按键
-    #define FEATURE_LED_KEY     BIT(4)  // 按键全彩灯
-    #define FEATURE_LED_NORMAL  BIT(3)  // 普通全彩灯
-    #define FEATURE_TOGGLE      BIT(2)  // 拨动开关
-    #define FEATURE_ROLLER      BIT(1)  // 旋转编码器
-    #define FEATURE_VIBRATION   BIT(0)  // 振动器
+#ifndef __FEATURE_HARDWARE_LIST_
+#define __FEATURE_HARDWARE_LIST_
+    #define UNUSED              0x80  // 
+    #define FEATURE_KEY         0x40  // 物理按键
+    #define FEATURE_TOUCH_KEY   0x20  // 触摸按键
+    #define FEATURE_LED_KEY     0x10  // 按键全彩灯
+    #define FEATURE_LED_NORMAL  0x08  // 普通全彩灯
+    #define FEATURE_TOGGLE      0x04  // 拨动开关
+    #define FEATURE_ROLLER      0x02  // 旋转编码器
+    #define FEATURE_MOTOR       0x01  // 振动器
+#endif
 
-    #define FEATURE_BACKLIGHT   BIT(7)  // 单色背光
-    #define FEATURE_BLUETOOTH   BIT(6)  // 蓝牙
-    #define FEATURE_BATTERY     BIT(5)  // 电池
-    #define FEATURE_STATUS_LED  BIT(4)  // 状态灯
+#ifndef __FEATURE_NORMAL_LIST_
+#define __FEATURE_NORMAL_LIST_
+    #define FEATURE_BACKLIGHT   0x80  // 单色背光
+    #define FEATURE_BLUETOOTH   0x40  // 蓝牙
+    #define FEATURE_BATTERY     0x20  // 电池
+    #define FEATURE_STATUS_LED  0x10  // 状态灯
 
-    #define FEATURE_MACRO       BIT(2)  // 宏
-    #define FEATURE_EXTEND      BIT(1)  // 扩展特性设置支持
+    #define FEATURE_MACRO       0x02  // 宏
+    #define FEATURE_EXTEND      0x01  // 扩展特性设置支持
 #endif
 
 /* 基本报表支持列表 */
 #ifndef __FEATURE_BASIC_LIST_
 #define __FEATURE_BASIC_LIST_
-    #define FEATURE_BASIC_KEYBOARD  BIT(7) // 标准键盘
-    #define FEATURE_BASIC_MOUSE     BIT(6) // 标准鼠标
-    #define FEATURE_BASIC_MEDIA     BIT(5) // 多媒体键盘
-    #define FEATURE_BASIC_GAMEPAD   BIT(4) // 游戏手柄
-    #define FEATURE_BASIC_ABSOLUTE  BIT(3) // 绝对定位
-    #define FEATURE_BASIC_DAIL      BIT(2) // Dail
+    #define FEATURE_BASIC_KEYBOARD  0x80 // 标准键盘
+    #define FEATURE_BASIC_MOUSE     0x40 // 标准鼠标
+    #define FEATURE_BASIC_MEDIA     0x20 // 多媒体键盘
+    #define FEATURE_BASIC_GAMEPAD   0x10 // 游戏手柄
+    #define FEATURE_BASIC_ABSOLUTE  0x08 // 绝对定位
+    #define FEATURE_BASIC_DAIL      0x04 // Dail
 #endif
 
 /* 扩展功能支持列表 */
 #ifndef __FEATURE_EXTEND_LIST_
 #define __FEATURE_EXTEND_LIST_
-    #define FEATURE_EXTEND_LAYER       BIT(7) // 按键分层
+    #define FEATURE_EXTEND_LAYER       0x80 // 按键分层
 
-    #define FEATURE_EXTEND_DEVICE_NAME BIT(5) // 自定设备名
-    #define FEATURE_EXTEND_VPID        BIT(4) // 自定 VID/PID
+    #define FEATURE_EXTEND_DEVICE_NAME 0x20 // 自定设备名
+    #define FEATURE_EXTEND_VPID        0x10 // 自定 VID/PID
 
-    #define FEATURE_EXTEND_REALTIME    BIT(0) // 实时设置预览
+    #define FEATURE_EXTEND_REALTIME    0x01 // 实时设置预览
 #endif
 
 
@@ -107,10 +109,8 @@ __sbit  __at (0xB7) P37;
     #define LED P12
     #define LED_COUNT 4
 
-    #define FEATURE_BASIC_STATUS_H FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_MOUSE | FEATURE_BASIC_MEDIA | FEATURE_BASIC_GAMEPAD | FEATURE_BASIC_ABSOLUTE // 特性支持，高8位
-    #define FEATURE_BASIC_STATUS_L FEATURE_MACRO | FEATURE_EXTEND // 特性支持，低8位
-
-    #define FEATURE_EXTEND_STATUS_H 0x00
+    #define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_MOUSE | FEATURE_BASIC_MEDIA | FEATURE_BASIC_GAMEPAD | FEATURE_BASIC_ABSOLUTE // 特性支持，高8位
+    #define FEATURE_NORMAL FEATURE_MACRO | FEATURE_EXTEND // 特性支持，低8位
     
 #elif defined(SIMPAD_NANO_AE)
     #define BT1 P15
@@ -134,6 +134,23 @@ __sbit  __at (0xB7) P37;
     #define ROM_SDA P11
     #define ROM_SCL P10
     #define ROM_WP P33
+#elif defined(SIMPAD_TOUCH)
+    #define BT1 P15
+    #define BT2 P14
+    #define BT3 P16
+    #define BT4 P17
+    #define KEY_COUNT 4
+    #define	TOUCH_COUNT	4
+    // #define LED P33
+    #define LED_COUNT 0
+    #define HAS_ROM
+    #define ROM_SIZE 0x800
+    #define ROM_SDA P10
+    #define ROM_SCL P31
+    #define ROM_WP P11
+    #define MOTOR P30
+
+    #define FEATURE_HARDWARE (FEATURE_MOTOR | FEATURE_LED_KEY | FEATURE_TOUCH_KEY)
 #elif defined(SIMPAD_V2)
     #define BT1 P32
     #define BT2 P33
@@ -159,6 +176,10 @@ __sbit  __at (0xB7) P37;
     #error "No board defined!"
 #endif
 
+#if LED_COUNT > 0
+    #define HAS_LED
+#endif
+
 #define VENDOR_ID_H 0x80
 #define VENDOR_ID_L 0x88
 
@@ -171,6 +192,7 @@ __sbit  __at (0xB7) P37;
  * 00 06 SimPad v2 - Year Edition
  * 00 07 SimPad Nano - Year Edition
  * 00 08 SimKey
+ * 00 A0 SimPad Touch
  * 00 FF SimPad Boot
  */
 #if defined(SIMPAD_V2_AE)
@@ -182,6 +204,9 @@ __sbit  __at (0xB7) P37;
 #elif defined(SIM_KEY)
   #define PRODUCT_ID_H 0x00
   #define PRODUCT_ID_L 0x08
+#elif defined(SIMPAD_TOUCH)
+  #define PRODUCT_ID_H 0x00
+  #define PRODUCT_ID_L 0xA0
 #elif defined(SIMPAD_V2)
   #define PRODUCT_ID_H 0x00
   #define PRODUCT_ID_L 0x01

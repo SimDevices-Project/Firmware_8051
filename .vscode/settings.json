@@ -1,3 +1,14 @@
 {
-  "C_Cpp.default.configurationProvider": "cl.eide"
+  "C_Cpp.default.configurationProvider": "cl.eide",
+  "files.associations": {
+    "Main.C": "cpp",
+    "TouchKey.C": "cpp",
+    "ch552.h": "c",
+    "bsp.h": "c",
+    "string.h": "c",
+    "debounce.h": "c",
+    "sys.h": "c",
+    "stdbool.h": "c"
+  },
+  "editor.tabSize": 2
 }

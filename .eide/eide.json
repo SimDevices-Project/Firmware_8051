@@ -2,9 +2,7 @@
   "name": "SimPad_Firmware_8051_re",
   "type": "C51",
   "dependenceList": [],
-  "srcDirs": [
-    "src"
-  ],
+  "srcDirs": ["src"],
   "outDir": "build",
   "deviceName": null,
   "packDir": null,
@@ -39,7 +37,7 @@
         "incList": [],
         "libList": [],
         "sourceDirList": [],
-        "defineList": []
+        "defineList": ["FREQ_SYS=24000000"]
       }
     }
   }

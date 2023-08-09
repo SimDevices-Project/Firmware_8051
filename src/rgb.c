@@ -29,6 +29,7 @@ void __ws2812_send(uint32_t value) {
 }
 #endif
 
+#if LED_COUNT > 0
 void rgbInit() {
 #ifdef LEDTYPE_WS2812
   __ws2812_init();
@@ -39,9 +40,12 @@ void rgbInit() {
 }
 
 void rgbSet(uint8_t index, uint32_t value) {
+#ifdef LEDTYPE_WS2812
   rgbGRBData[index] = ((value & 0x00FF00) << 8) | ((value & 0xFF0000) >> 8) |
                       (value & 0x0000FF);
+#endif
 }
+
 
 void rgbPush() {
 #ifdef LEDTYPE_WS2812
@@ -53,3 +57,4 @@ void rgbPush() {
   E_DIS = 0;
 #endif
 }
+#endif

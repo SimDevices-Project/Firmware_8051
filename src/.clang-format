@@ -1,0 +1,23 @@
+{
+  BasedOnStyle: LLVM,
+  UseTab: Never,
+  IndentWidth: 2,
+  TabWidth: 2,
+  BreakBeforeBraces: Allman,
+  AllowShortIfStatementsOnASingleLine: false,
+  IndentCaseLabels: false,
+  ColumnLimit: 0,
+  AccessModifierOffset: -2,
+  NamespaceIndentation: All,
+  FixNamespaceComments: false,
+
+  # 连续赋值时，对齐所有等号
+  AlignConsecutiveAssignments: true,
+  # 连续声明时，对齐所有声明的变量名
+  AlignConsecutiveDeclarations: true,
+  # 左括号(左圆括号、左尖括号、左方括号)后的对齐: Align, DontAlign, AlwaysBreak(总是在左括号后换行)
+  AlignAfterOpenBracket: DontAlign,
+  # 如果函数调用或带括号的初始化列表不适合全部在一行时
+  # 允许将所有参数放到下一行，即使BinPackArguments为false
+  AllowAllArgumentsOnNextLine: true,
+}

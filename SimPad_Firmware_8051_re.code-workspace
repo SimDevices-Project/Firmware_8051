@@ -5,15 +5,44 @@
         }
     ],
     "settings": {
-        "files.associations": {
-            ".eideignore": "ignore"
-        },
-        "C_Cpp.default.intelliSenseMode": "gcc-arm",
+        "C_Cpp.default.browse.databaseFilename": "./.vscode/cpptools/browse.vc.db",
         "files.autoGuessEncoding": true,
-        "C_Cpp.default.cppStandard": "c++14",
-        "C_Cpp.default.cStandard": "c99",
         "EIDE.ARM.Option.AutoGenerateRTE_Components": false,
         "EIDE.SourceTree.AutoSearchIncludePath": true,
-        "EIDE.SourceTree.AutoSearchObjFile": true
+        "EIDE.SourceTree.AutoSearchObjFile": true,
+        "C_Cpp.default.configurationProvider": "cl.eide",
+        "C_Cpp.errorSquiggles": "disabled",
+        "files.associations": {
+            ".eideignore": "ignore",
+            "*.a51": "a51",
+            "*.h": "c",
+            "*.c": "c",
+            "*.hxx": "cpp",
+            "*.hpp": "cpp",
+            "*.c++": "cpp",
+            "*.cpp": "cpp",
+            "*.cxx": "cpp",
+            "*.cc": "cpp"
+        },
+        "[yaml]": {
+            "editor.insertSpaces": true,
+            "editor.tabSize": 2,
+            "editor.autoIndent": "advanced"
+        },
+        "editor.tabSize": 2
+    },
+    "extensions": {
+        "recommendations": [
+            "cl.eide",
+            "keroc.hex-fmt",
+            "xiaoyongdong.srecord",
+            "hars.cppsnippets",
+            "zixuanwang.linkerscript",
+            "redhat.vscode-yaml",
+            "IBM.output-colorizer",
+            "cschlosser.doxdocgen",
+            "ms-vscode.vscode-serial-monitor",
+            "cl.stm8-debug"
+        ]
     }
 }
