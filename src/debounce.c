@@ -40,7 +40,7 @@ void debounceUpdate() {
 #else
   __debounce_pin(1) __debounce_pin(2)
 #if (defined(SIMPAD_V2_AE) || defined(SIMPAD_V2))
-      __debounce_pin(3);
+  __debounce_pin(3);
   __debounce_pin(4);
   __debounce_pin(5);
 #elif (defined(SIMPAD_NANO_AE) || defined(SIMPAD_NANO))

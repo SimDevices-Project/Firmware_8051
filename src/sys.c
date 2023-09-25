@@ -192,9 +192,9 @@ uint8_t hexToChar(uint8_t bHex) {
 void sysLoadConfig() {
   memset(&sysConfig, 0x00, sizeof(SysConfig));
   uint8_t i, point = 0;
-  uint16_t tmp = 0, addr = 0;
+  // uint16_t tmp = 0, addr = 0;
   for (i = 0; i < KEY_COUNT; i++) {
-    KEY_CFG(i).mode = (KeyMode)romRead8i(point++);
+    KEY_CFG(i).mode = romRead8i(point++);
     // tmp = romRead16i(0x08 + i * 4);         // BTx
     // KEY_CFG(i).marco = (tmp & 0x8000) != 0;
     KEY_CFG(i).codeHH = romRead8i(point++);

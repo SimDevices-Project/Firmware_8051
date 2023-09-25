@@ -10,15 +10,15 @@
 const uint8_c usbDevDesc[] = {
     0x12,                       // 描述符长度(18字节)
     0x01,                       // 描述符类型
-    //0x10, 0x01,               // 本设备所用USB版本(1.1)
-    0x00, 0x02,                 //本设备所用USB版本(2.0)
+    0x10, 0x01,                 // 本设备所用USB版本(1.1)
+    // 0x00, 0x02,                 // 本设备所用USB版本(2.0)
     0x00,                       // 类代码
     0x00,                       // 子类代码
     0x00,                       // 设备所用协议
     THIS_ENDP0_SIZE,            // 端点0最大包长
     VENDOR_ID_L, VENDOR_ID_H,   // 厂商ID
     PRODUCT_ID_L, PRODUCT_ID_H, // 产品ID
-    0x01, 0x02,                 // 设备版本号 (2.1)
+    0x03, 0x02,                 // 设备版本号 (2.03)
     0x01,                       // 描述厂商信息的字符串描述符的索引值
     0x02,                       // 描述产品信息的字串描述符的索引值
     0x03,                       // 描述设备序列号信息的字串描述符的索引值
@@ -53,6 +53,7 @@ const uint8_c KeyRepDesc[] = {
     0x95, 0x08,       //   Report Count (8)
     0x81, 0x00,       //   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
     0xC0,             // End Collection
+
     0x05, 0x0C,       // Usage Page (Consumer)
     0x09, 0x01,       // Usage (Consumer Control)
     0xA1, 0x01,       // Collection (Application)
@@ -66,31 +67,35 @@ const uint8_c KeyRepDesc[] = {
     0x95, 0x01,       //   Report Count (1)
     0x81, 0x00,       //   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
     0xC0,             // End Collection
-    0x05, 0x01,       // USAGE_PAGE (Generic Desktop)
-    0x09, 0x05,       // USAGE (Game Pad)
-    0xa1, 0x01,       // COLLECTION (Application)
-    0x85, 0x03,       //   REPORT_ID (3)
-    0xa1, 0x00,       //   COLLECTION (Physical)
-    0x05, 0x09,       //     USAGE_PAGE (Button)
-    0x19, 0x01,       //     USAGE_MINIMUM (Button 1)
-    0x29, 0x10,       //     USAGE_MAXIMUM (Button 16)
-    0x15, 0x00,       //     LOGICAL_MINIMUM (0)
-    0x25, 0x01,       //     LOGICAL_MAXIMUM (1)
-    0x75, 0x01,       //     REPORT_SIZE (1)
-    0x95, 0x10,       //     REPORT_COUNT (16)
-    0x81, 0x02,       //     INPUT (Data,Var,Abs)
-    0x05, 0x01,       //     USAGE_PAGE (Generic Desktop)
-    0x09, 0x30,       //     USAGE (X)
-    0x09, 0x31,       //     USAGE (Y)
-    0x09, 0x32,       //     USAGE (Z)
-    0x09, 0x33,       //     USAGE (Rx)
-    0x15, 0x81,       //     LOGICAL_MINIMUM (-127)
-    0x25, 0x7f,       //     LOGICAL_MAXIMUM (127)
-    0x75, 0x08,       //     REPORT_SIZE (8)
-    0x95, 0x04,       //     REPORT_COUNT (4)
-    0x81, 0x02,       //     INPUT (Data,Var,Abs)
-    0xc0,             //   END_COLLECTION
-    0xc0,             // END_COLLECTION
+    
+    0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
+    0x09, 0x04,                    // USAGE (Game Pad)
+    0xa1, 0x01,                    // COLLECTION (Application)
+    // ReportID - 8 bits
+    0x85, 0x03,                    //   REPORT_ID (3)
+    0xa1, 0x00,                    //   COLLECTION (Physical)
+    // Buttons - 16 bits
+    0x05, 0x09,                    //     USAGE_PAGE (Button)
+    0x19, 0x01,                    //     USAGE_MINIMUM (Button 1)
+    0x29, 0x10,                    //     USAGE_MAXIMUM (Button 16)
+    0x15, 0x00,                    //     LOGICAL_MINIMUM (0)
+    0x25, 0x01,                    //     LOGICAL_MAXIMUM (1)
+    0x75, 0x01,                    //     REPORT_SIZE (1)
+    0x95, 0x10,                    //     REPORT_COUNT (16)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    // X & Y - 2x8 = 16 bits
+    0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
+    0x09, 0x30,                    //     USAGE (X)
+    0x09, 0x31,                    //     USAGE (Y)
+    0x09, 0x32,                    //     USAGE (Z)
+    0x09, 0x33,                    //     USAGE (Rx)
+    0x15, 0x81,                    //     LOGICAL_MINIMUM (-127)
+    0x25, 0x7f,                    //     LOGICAL_MAXIMUM (127)
+    0x75, 0x08,                    //     REPORT_SIZE (8)
+    0x95, 0x04,                    //     REPORT_COUNT (4)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0xc0,                          //   END_COLLECTION
+    0xc0                           // END_COLLECTION
 };
 const uint8_c MouseRepDesc[] = {
     0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
@@ -263,7 +268,7 @@ const uint8_c usbCfgDesc[] = {
 
 
 const uint8_c usbLangDesc[] = { 0x04, 0x03, 0x04, 0x08 };
-const uint8_c usbManuDesc[] = { 0x0A, 0x03, 'S', 0, 'i', 0, 'm', 0, 'D', 0, 'e', 0, 'v', 0, 'i', 0, 'c', 0, 'e', 0 };
+const uint8_c usbManuDesc[] = { 0x14, 0x03, 'S', 0, 'i', 0, 'm', 0, 'D', 0, 'e', 0, 'v', 0, 'i', 0, 'c', 0, 'e', 0 };
 #if defined(SIMPAD_V2_AE)
     const uint8_c usbProdDesc[] = { 0x12, 0x03, 'S', 0, 'i', 0, 'm', 0, 'P', 0, 'a', 0, 'd', 0, ' ', 0, '2', 0 };
 #elif defined(SIMPAD_NANO_AE)
@@ -299,6 +304,7 @@ uint8_x __at (0x0000) Ep0Buffer[THIS_ENDP0_SIZE];                               
 uint8_x __at (THIS_ENDP0_SIZE) Ep1Buffer[KEY_BUFFER];                                       //端点1 IN缓冲区,必须是偶地址
 uint8_x __at (THIS_ENDP0_SIZE + KEY_BUFFER) Ep2Buffer[MOUSE_BUFFER];                        //端点2 IN缓冲区,必须是偶地址
 uint8_x __at (THIS_ENDP0_SIZE + KEY_BUFFER + MOUSE_BUFFER) Ep3Buffer[2 * HID_BUFFER];       //端点3 OUT&IN缓冲区,必须是偶地址
+
 // 自动分配地址从0x00C8开始，需修改make文件
 uint8_x HIDMouse[4] = { 0 };                                                                //鼠标数据
 /*
@@ -712,6 +718,7 @@ void usbPushKeydata() {
     uint8_t type = HIDKey[0];
     if (type == 0x01) len = sizeof(HIDKey);
     else if (type == 0x02) len = 3;
+    else if (type == 0x03) len = 7;
     if (type) {
         memcpy(Ep1Buffer, HIDKey, len);
         UEP1_T_LEN = len;

@@ -3,9 +3,9 @@
 
 #ifndef __MULTI_COMPILE__
 /* 编译目标设置 开始 */
-//#define SIMPAD_V2_AE
+#define SIMPAD_V2_AE
 //#define SIMPAD_NANO_AE
-#define SIM_KEY
+//#define SIM_KEY
 //#define SIMPAD_V2
 //#define SIMPAD_NANO
 //#define SIMPAD_TOUCH
@@ -197,7 +197,8 @@ __sbit  __at (0xB7) P37;
  */
 #if defined(SIMPAD_V2_AE)
   #define PRODUCT_ID_H 0x00
-  #define PRODUCT_ID_L 0x06
+  // #define PRODUCT_ID_L 0x06
+  #define PRODUCT_ID_L 0xAA
 #elif defined(SIMPAD_NANO_AE)
   #define PRODUCT_ID_H 0x00
   #define PRODUCT_ID_L 0x07
@@ -218,7 +219,7 @@ __sbit  __at (0xB7) P37;
   #define PRODUCT_ID_L 0x00
 #endif
 
-#define DEVICE_INFO_ARRAY [ 0x00,               0x00,               PRODUCT_ID_H,       PRODUCT_ID_L,                                         \
+#define DEVICE_INFO_ARRAY [ 0x00,               0x00,               PRODUCT_ID_H,       PRODUCT_ID_L,        \
                             ROM_VERSION_YEAR_H, ROM_VERSION_YEAR_L, ROM_VERSION_MONTH,  ROM_VERSION_DATE,    \
                             0x00,               0x01,               0x00,               0x00                 \
                             ]

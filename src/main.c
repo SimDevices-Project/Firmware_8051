@@ -11,7 +11,7 @@
 
 void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1); // USB中断定义
 #ifdef TOUCH_COUNT
-void __TK_int_ISR() __interrupt(INT_NO_TKEY) __using(1);        // TouchKey中断定义
+void __TK_int_ISR() __interrupt(INT_NO_TKEY) __using(1); // TouchKey中断定义
 #endif
 
 // extern uint8_t FLAG;
@@ -32,10 +32,13 @@ uint16_t activeKey;   // 最近一次扫描时的按键激活状态记录
 /** @brief 标准8字节USB键盘报表，控制键字节 */
 uint8_t ctrlKey;
 
+/** @brief 游戏手柄报表，16个按键，16比特 */
+uint8_t controllerKeyH = 0, controllerKeyL = 0;
+
 void main()
 {
-  uint8_t  i, j;
-  uint16_t tmp;
+  uint8_t i, j;
+  // uint16_t tmp;
 
 #ifdef MOTOR
   uint16_t motorDelay = 0;
@@ -71,20 +74,24 @@ void main()
 
   sysTickConfig();
 
-  tmp = romRead16e(0x00);
-  romWrite16e(0x00, 0x8088);
-  // 灯光测试Demo
-  if(tmp == 0x8088) {
-    rgbSet(0, 0x00FFFFFF);
-  } else {
-    rgbSet(0, 0x00FF0000);
-  }
-  rgbPush();
-  // rgbSet(0, 0x00FFFFFF);
-  // rgbSet(1, 0x00FFFFFF);
-  // rgbSet(2, 0x00FFFFFF);
-  // rgbSet(3, 0x00FFFFFF);
+  // tmp = romRead16e(0x00);
+  // romWrite16e(0x00, 0x8088);
+  // // 灯光测试Demo
+  // if (tmp == 0x8088)
+  // {
+  //   rgbSet(0, 0x00FFFFFF);
+  // }
+  // else
+  // {
+  //   rgbSet(0, 0x00FF0000);
+  // }
   // rgbPush();
+
+  rgbSet(0, 0x00FFFFFF);
+  rgbSet(1, 0x00FFFFFF);
+  rgbSet(2, 0x00FFFFFF);
+  rgbSet(3, 0x00FFFFFF);
+  rgbPush();
 
   sysMsCounter = 0;
   while (1)
@@ -148,6 +155,9 @@ void main()
             usbSetKeycode(0, 1); // 报表位0设置为1，即标准键盘
             usbSetKeycode(1, ctrlKey);
 
+            rgbSet(0, 0x00FF0000);
+            rgbPush();
+
             usbPushKeydata(); // 发送 HID1 数据包
             break;
           // 当被激活的按键类型是多媒体按键时
@@ -166,10 +176,60 @@ void main()
             }
             usbSetKeycode(0, 2); // 报表位0设置为2，即多媒体键盘
 
+            rgbSet(0, 0x0000FF00);
+            rgbPush();
+
             usbPushKeydata(); // 发送 HID1 数据包
             break;
           case Mouse:
+          
+            rgbSet(0, 0x000000FF);
+            rgbPush();
 
+            break;
+          case GamepadButton:
+
+            controllerKeyH = 0;
+            controllerKeyL = 0;
+            for (j = 0; j < KEY_COUNT; j++)
+            {
+              if (cfg->keyConfig[j].mode == GamepadButton)
+              {
+                if ((activeKey >> j) & 0x01)
+                {
+                  controllerKeyH |= (cfg->keyConfig[j].codeLH);
+                  controllerKeyL |= (cfg->keyConfig[j].codeLL);
+                }
+              }
+            }
+
+            usbSetKeycode(0, 3); // 报表位0设置为3，即游戏手柄
+
+            if (activeKey == 0)
+            {
+              rgbSet(0, 0x00FFFFFF);
+              rgbSet(1, 0x00FFFFFF);
+              rgbSet(2, 0x00FFFFFF);
+              rgbSet(3, 0x00FFFFFF);
+            }
+            else
+            {
+              rgbSet(0, 0x00FF0000);
+              rgbSet(1, 0x0000FF00);
+              rgbSet(2, 0x000000FF);
+              rgbSet(3, 0x00FF0000);
+            }
+            rgbPush();
+
+            usbSetKeycode(1, controllerKeyH);
+            usbSetKeycode(2, controllerKeyL);
+
+            usbSetKeycode(3, 0x00);
+            usbSetKeycode(4, 0x00);
+            usbSetKeycode(5, 0x00);
+            usbSetKeycode(6, 0x00);
+
+            usbPushKeydata(); // 发送 HID1 数据包
             break;
           default:
             break;
