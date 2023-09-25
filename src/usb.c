@@ -773,11 +773,22 @@ void Enp3IntIn()
  * @brief 设置非标准混合设备USB报表
  *
  * @param i 目标字节下标，0-9
- * @param key 要设置的报表Code
+ * @param code 要设置的报表Code
  */
-void usbSetKeycode(uint8_t i, uint8_t key)
+void usbSetKeycode(uint8_t i, uint8_t code)
 {
-  HIDKey[i] = key;
+  HIDKey[i] = code;
+}
+
+/**
+ * @brief 设置非标准混合设备USB报表
+ *
+ * @param i 目标字节下标，0-9
+ * @param code 要设置的报表Code
+ */
+void usbSetMousecode(uint8_t i, uint8_t code)
+{
+  HIDMouse[i] = code;
 }
 
 /**

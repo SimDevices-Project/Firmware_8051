@@ -6,9 +6,11 @@
 
 void usbDevInit();                              // USB设备初始化
 
-void usbSetKeycode(uint8_t i, uint8_t key);     // 设置键值
-void usbSetMousecode(uint8_t i, uint8_t key);   // 设置鼠标值
+void usbSetKeycode(uint8_t i, uint8_t code);    // 设置键值
+void usbSetMousecode(uint8_t i, uint8_t code);  // 设置鼠标值
+
 void usbReleaseAll();                           // 清除上传缓冲区
+
 void usbPushKeydata();                          // 上传按键数据
 void usbPushMousedata();                        // 上传鼠标数据
 
