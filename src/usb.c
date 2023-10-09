@@ -7,6 +7,10 @@
 
 #define THIS_ENDP0_SIZE DEFAULT_ENDP0_SIZE
 
+// Used in SET_FEATURE and CLEAR_FEATURE
+#define USB_FEATURE_ENDPOINT_HALT 0 // Endpoint only
+#define USB_FEATURE_DEVICE_REMOTE_WAKEUP 1		// Device only
+
 const uint8_c usbDevDesc[] = {
     0x12,       // 描述符长度(18字节)
     0x01,       // 描述符类型
@@ -376,32 +380,13 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
       if (len == sizeof(USB_SETUP_REQ))
       { // SETUP包长度
         SetupLen = UsbSetupBuf->wLengthL;
-        if (UsbSetupBuf->wLengthH)
-          SetupLen = 0xFF; // 限制总长度
-        len          = 0;  // 默认为成功并且上传0长度
-        SetupReqCode = UsbSetupBuf->bRequest;
-        if ((UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK) != USB_REQ_TYP_STANDARD)
-        { /* 非标准请求 */
-          switch (SetupReqCode)
-          {
-          // case 0x01://GetReport
-          //     break;
-          // case 0x02://GetIdle
-          //     break;
-          // case 0x03://GetProtocol
-          //     break;
-          // case 0x09://SetReport
-          //     break;
-          // case 0x0A://SetIdle
-          //     break;
-          // case 0x0B://SetProtocol
-          //     break;
-          default:
-            len = 0xFF; /*命令不支持*/
-            break;
-          }
+        if (UsbSetupBuf->wLengthH || SetupLen > 0x7F)
+        {
+          SetupLen = 0x7F; // 限制总长度
         }
-        else
+        len          = 0; // 默认为成功并且上传0长度
+        SetupReqCode = UsbSetupBuf->bRequest;
+        if ((UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK) == USB_REQ_TYP_STANDARD)
         { // 标准请求
           switch (SetupReqCode)
           { // 请求码
@@ -459,24 +444,21 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
               }
               break;
             case 0x22: // 报表描述符
-              if (UsbSetupBuf->wIndexL == 0)
-              {                                       // 接口0报表描述符
+              switch (UsbSetupBuf->wIndexL)
+              {
+              case 0:
                 pDescr = (uint8_t *)(&KeyRepDesc[0]); // 数据准备上传
                 len    = sizeof(KeyRepDesc);
-              }
-              else if (UsbSetupBuf->wIndexL == 1)
-              {                                         // 接口1报表描述符
+                break;
+              case 1:
                 pDescr = (uint8_t *)(&MouseRepDesc[0]); // 数据准备上传
                 len    = sizeof(MouseRepDesc);
-              }
-              else if (UsbSetupBuf->wIndexL == 2)
-              {                                          // 接口2报表描述符
+              case 2:
                 pDescr = (uint8_t *)(&CustomRepDesc[0]); // 数据准备上传
                 len    = sizeof(CustomRepDesc);
-              }
-              else
-              {
-                len = 0xff; // 本程序只有3个接口，这句话正常不可能执行
+              default:
+                len = 0xff; // 不支持的接口，这句话正常不可能执行
+                break;
               }
               break;
             default:
@@ -484,7 +466,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
               break;
             }
             if (SetupLen > len)
-              SetupLen = len;                                               // 限制总长度
+            {
+              SetupLen = len; // 限制总长度
+            }
             len = SetupLen >= THIS_ENDP0_SIZE ? THIS_ENDP0_SIZE : SetupLen; // 本次传输长度
             memcpy(Ep0Buffer, pDescr, len);                                 /* 加载上传数据 */
             SetupLen -= len;
@@ -504,36 +488,41 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
           case USB_CLEAR_FEATURE:
             if ((UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK) == USB_REQ_RECIP_ENDP)
             { // 端点
-              switch (UsbSetupBuf->wIndexL)
+              if ((((uint16_t)UsbSetupBuf->wValueH << 8) | UsbSetupBuf->wValueL) == USB_FEATURE_ENDPOINT_HALT)
               {
-              case 0x81:
-                UEP1_CTRL = UEP1_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
-                break;
-              case 0x82:
-                UEP2_CTRL = UEP2_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
-                break;
-              case 0x83:
-                UEP3_CTRL = UEP3_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
-                break;
-              case 0x03:
-                UEP3_CTRL = UEP3_CTRL & ~(bUEP_R_TOG | MASK_UEP_R_RES) | UEP_R_RES_ACK;
-                break;
-              default:
-                len = 0xFF; // 不支持的端点
-                break;
+                switch (UsbSetupBuf->wIndexL)
+                {
+                case 0x81:
+                  UEP1_CTRL = UEP1_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
+                  break;
+                case 0x82:
+                  UEP2_CTRL = UEP2_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
+                  break;
+                case 0x83:
+                  UEP3_CTRL = UEP3_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
+                  break;
+                case 0x03:
+                  UEP3_CTRL = UEP3_CTRL & ~(bUEP_R_TOG | MASK_UEP_R_RES) | UEP_R_RES_ACK;
+                  break;
+                default:
+                  len = 0xFF; // 不支持的端点
+                  break;
+                }
+              }else{
+                len = 0xFF;
               }
             }
-            if ((UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK) == USB_REQ_RECIP_DEVICE)
-            { // 设备
-              break;
-            }
+            // if ((UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK) == USB_REQ_RECIP_DEVICE)
+            // { // 设备
+            //   break;
+            // }
             else
             {
               len = 0xFF; // 不是端点不支持
             }
             break;
           case USB_SET_FEATURE: /* Set Feature */
-            if ((UsbSetupBuf->bRequestType & 0x1F) == 0x00)
+            if ((UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK) == USB_REQ_RECIP_DEVICE)
             { /* 设置设备 */
               if ((((uint16_t)UsbSetupBuf->wValueH << 8) | UsbSetupBuf->wValueL) == 0x01)
               {
@@ -551,7 +540,7 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 len = 0xFF; /* 操作失败 */
               }
             }
-            else if ((UsbSetupBuf->bRequestType & 0x1F) == 0x02)
+            else if ((UsbSetupBuf->bRequestType & USB_REQ_RECIP_MASK) == USB_REQ_RECIP_ENDP)
             { /* 设置端点 */
               if ((((uint16_t)UsbSetupBuf->wValueH << 8) | UsbSetupBuf->wValueL) == 0x00)
               {
@@ -599,6 +588,27 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
             break;
           default:
             len = 0xFF; // 操作失败
+            break;
+          }
+        }
+        else
+        { /* 非标准请求 */
+          switch (SetupReqCode)
+          {
+          // case 0x01://GetReport
+          //     break;
+          // case 0x02://GetIdle
+          //     break;
+          // case 0x03://GetProtocol
+          //     break;
+          // case 0x09://SetReport
+          //     break;
+          // case 0x0A://SetIdle
+          //     break;
+          // case 0x0B://SetProtocol
+          //     break;
+          default:
+            len = 0xFF; /*命令不支持*/
             break;
           }
         }
