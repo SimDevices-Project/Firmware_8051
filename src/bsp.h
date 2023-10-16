@@ -197,8 +197,7 @@ __sbit  __at (0xB7) P37;
  */
 #if defined(SIMPAD_V2_AE)
   #define PRODUCT_ID_H 0x00
-  // #define PRODUCT_ID_L 0x06
-  #define PRODUCT_ID_L 0xAA
+  #define PRODUCT_ID_L 0x06
 #elif defined(SIMPAD_NANO_AE)
   #define PRODUCT_ID_H 0x00
   #define PRODUCT_ID_L 0x07

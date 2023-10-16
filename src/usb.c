@@ -380,9 +380,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
       if (len == sizeof(USB_SETUP_REQ))
       { // SETUP包长度
         SetupLen = UsbSetupBuf->wLengthL;
-        if (UsbSetupBuf->wLengthH || SetupLen > 0x7F)
+        if (UsbSetupBuf->wLengthH || SetupLen > 0xFF)
         {
-          SetupLen = 0x7F; // 限制总长度
+          SetupLen = 0xFF; // 限制总长度
         }
         len          = 0; // 默认为成功并且上传0长度
         SetupReqCode = UsbSetupBuf->bRequest;
