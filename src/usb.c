@@ -8,8 +8,8 @@
 #define THIS_ENDP0_SIZE DEFAULT_ENDP0_SIZE
 
 // Used in SET_FEATURE and CLEAR_FEATURE
-#define USB_FEATURE_ENDPOINT_HALT 0 // Endpoint only
-#define USB_FEATURE_DEVICE_REMOTE_WAKEUP 1		// Device only
+#define USB_FEATURE_ENDPOINT_HALT 0        // Endpoint only
+#define USB_FEATURE_DEVICE_REMOTE_WAKEUP 1 // Device only
 
 const uint8_c usbDevDesc[] = {
     0x12,       // 描述符长度(18字节)
@@ -334,11 +334,12 @@ uint8_x HIDMouse[4] = {0}; // 鼠标数据
         media key
     byte 3-9: standard key
 */
-uint8_x        HIDKey[10]            = {0};              // 键盘数据
-uint8_x        HIDInput[HID_BUFFER]  = {0};              // 自定义HID接收缓冲
-uint8_x        HIDOutput[HID_BUFFER] = {0};              // 自定义HID发送缓冲
-uint8_i        SetupReqCode, SetupLen, Count, UsbConfig; // FLAG,
-uint8_t       *pDescr;                                   // USB配置标志
+uint8_x        HIDKey[10]            = {0};    // 键盘数据
+uint8_x        HIDInput[HID_BUFFER]  = {0};    // 自定义HID接收缓冲
+uint8_x        HIDOutput[HID_BUFFER] = {0};    // 自定义HID发送缓冲
+uint8_i        SetupReqCode, Count, UsbConfig; // FLAG,
+uint16_i       SetupLen;                       // 包长度
+uint8_t       *pDescr;                         // USB配置标志
 volatile __bit HIDIN = 0;
 #define UsbSetupBuf ((PUSB_SETUP_REQ)Ep0Buffer)
 
@@ -379,8 +380,8 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
       len = USB_RX_LEN;
       if (len == sizeof(USB_SETUP_REQ))
       { // SETUP包长度
-        SetupLen = UsbSetupBuf->wLengthL;
-        if (UsbSetupBuf->wLengthH || SetupLen > 0xFF)
+        SetupLen = ((uint16_t)UsbSetupBuf->wLengthH << 8) | (UsbSetupBuf->wLengthL);
+        if (UsbSetupBuf->wLengthH != 0)
         {
           SetupLen = 0xFF; // 限制总长度
         }
@@ -508,7 +509,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                   len = 0xFF; // 不支持的端点
                   break;
                 }
-              }else{
+              }
+              else
+              {
                 len = 0xFF;
               }
             }
