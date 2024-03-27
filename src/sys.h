@@ -6,9 +6,9 @@
 
 #include "bsp.h"
 
-#define FREQ_SYS 24000000 // 系统主频24MHz
-#define OSC_EN_XT 0       // 外部晶振使能，默认开启内部晶振
-#define MARCO_MAX 48      // 单个宏指令大小
+// #define FREQ_SYS 12000000 // 默认 系统主频24MHz
+#define OSC_EN_XT 0       // 默认 外部晶振使能，默认开启内部晶振
+// #define MARCO_MAX 48      // 单个宏指令大小
 
 void sysClockConfig();     // 时钟选择和配置
 void delay_us(uint16_t n); // 以uS为单位延时

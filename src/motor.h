@@ -4,6 +4,7 @@
 #include "bsp.h"
 #include "ch552.h"
 
+void motorInit();
 void motorUpdate();
 void activeMotor(uint16_t time);
 

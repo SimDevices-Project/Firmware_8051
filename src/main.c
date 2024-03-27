@@ -6,7 +6,7 @@
 #include "sys.h"
 #include "usb.h"
 
-#ifdef MOTOR
+#ifdef HAS_MOTOR
 #include "motor.h"
 #endif
 
@@ -51,6 +51,10 @@ void main()
   delay_ms(300);
 #endif
 
+#ifdef HAS_MOTOR
+  motorInit();
+#endif
+
 #ifdef TOUCH_COUNT
   TK_Init(BIT4 | BIT5 | BIT6 | BIT7, 0, 1); /* Choose TIN2, TIN3, TIN4, TIN5 for touchkey input. enable interrupt. */
   TK_SelectChannel(0);                      /* NOTICE: ch is not compatible with the IO actually. */
@@ -77,7 +81,7 @@ void main()
   {
     while (sysMsCounter--)
     {
-#ifdef MOTOR
+#ifdef HAS_MOTOR
       motorUpdate();
 #endif
       debounceUpdate();
@@ -98,7 +102,7 @@ void main()
         // 如果第i个键是被更改的
         if ((prevKey >> i) & 0x01)
         {
-#ifdef MOTOR
+#ifdef HAS_MOTOR
           // 如果第i个键是被更改的，并且这个操作是激活
           if ((activeKey >> i) & 0x01)
           {

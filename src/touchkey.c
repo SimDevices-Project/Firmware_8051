@@ -61,7 +61,7 @@ void TK_GetKeyFreeBuff() {
       OverTime = 0;
       while ((TKEY_CTRL & bTKC_IF) == 0) {
         if (++OverTime == 0) {
-          return 0xFF;
+          // return 0xFF;
         }
       }
       sum += TKEY_DAT; /*  */

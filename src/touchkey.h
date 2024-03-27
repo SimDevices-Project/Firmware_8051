@@ -38,8 +38,8 @@ Input channel as below:
 #define		CH5				(BIT5)
 #define		CH_FREE			(0x07)						/* Enable touch input, no channel is selected. */
 
-#define		TH_VALUE		(0x100)
-#define		SAMPLE_TIMES	(0x02)
+#define		TH_VALUE		(0x140)
+#define		SAMPLE_TIMES	(0x04)
 
 #ifdef TOUCH_COUNT
 /* External variable and function */ 

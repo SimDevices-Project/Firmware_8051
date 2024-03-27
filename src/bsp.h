@@ -3,12 +3,12 @@
 
 #ifndef __MULTI_COMPILE__
 /* 编译目标设置 开始 */
-#define SIMPAD_V2_AE
+//#define SIMPAD_V2_AE
 //#define SIMPAD_NANO_AE
 //#define SIM_KEY
 //#define SIMPAD_V2
 //#define SIMPAD_NANO
-//#define SIMPAD_TOUCH
+#define SIMPAD_TOUCH
 /* 编译目标设置 结束 */
 #endif
 
@@ -112,6 +112,7 @@ __sbit  __at (0xB7) P37;
     #define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_MOUSE | FEATURE_BASIC_MEDIA | FEATURE_BASIC_GAMEPAD | FEATURE_BASIC_ABSOLUTE // 特性支持，高8位
     #define FEATURE_NORMAL FEATURE_MACRO | FEATURE_EXTEND // 特性支持，低8位
     
+    #define FREQ_SYS 24000000
 #elif defined(SIMPAD_NANO_AE)
     #define BT1 P15
     #define BT2 P17
@@ -124,6 +125,8 @@ __sbit  __at (0xB7) P37;
     #define ROM_SDA P11
     #define ROM_SCL P10
     #define ROM_WP P33
+
+    #define FREQ_SYS 24000000
 #elif defined(SIM_KEY)
     #define BT1 P17
     #define KEY_COUNT 1
@@ -134,6 +137,8 @@ __sbit  __at (0xB7) P37;
     #define ROM_SDA P11
     #define ROM_SCL P10
     #define ROM_WP P33
+
+    #define FREQ_SYS 24000000
 #elif defined(SIMPAD_TOUCH)
     #define BT1 P15
     #define BT2 P14
@@ -148,9 +153,13 @@ __sbit  __at (0xB7) P37;
     #define ROM_SDA P10
     #define ROM_SCL P31
     #define ROM_WP P11
-    #define MOTOR P30
+    #define HAS_MOTOR
+    #define MOTOR_IN1 P30
+    #define MOTOR_IN2 P34
 
     #define FEATURE_HARDWARE (FEATURE_MOTOR | FEATURE_LED_KEY | FEATURE_TOUCH_KEY)
+
+    #define FREQ_SYS 12000000
 #elif defined(SIMPAD_V2)
     #define BT1 P32
     #define BT2 P33
@@ -165,6 +174,8 @@ __sbit  __at (0xB7) P37;
     #define G2G P12
     #define G2B P17
     #define LED_COUNT 2
+
+    #define FREQ_SYS 24000000
 #elif defined(SIMPAD_NANO)
     #define BT1 P17
     #define BT2 P15
@@ -172,6 +183,8 @@ __sbit  __at (0xB7) P37;
     #define KEY_COUNT 3
     #define LED P14
     #define LED_COUNT 2
+
+    #define FREQ_SYS 24000000
 #else
     #error "No board defined!"
 #endif
