@@ -1,6 +1,8 @@
 #include "hidrunner.h"
 
-void hid_run(){}
+void hid_run(){
+  UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK; // 恢复正常响应指令
+}
 
 // void writeHIDData(uint8_t dataLength, uint8_t* data){}
 void writeHIDFlash(uint8_t dataLength, uint8_t addr){}

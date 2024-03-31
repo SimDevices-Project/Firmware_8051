@@ -360,6 +360,7 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
           memset(HIDInput, 0x00, sizeof(HIDInput));
           memcpy(HIDInput, Ep3Buffer + 1, len - 1);
           HIDIN = 1;
+          UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK; // 阻止后续包
         }
       }
       break;

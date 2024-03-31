@@ -38,11 +38,145 @@ uint8_t ctrlKey;
 
 /** @brief 游戏手柄报表，16个按键，16比特 */
 uint8_t controllerKeyH = 0, controllerKeyL = 0;
+SysConfig *cfg;
+
+void checkKey()
+{
+  uint8_t i, j;
+  activeKey = 0;
+  for (i = 0; i < KEY_COUNT; i++)
+  {
+    activeKey <<= 1;
+    activeKey |= isKeyActive(i);
+  }
+  if (prevKey != activeKey)
+  {
+    prevKey ^= activeKey;
+    for (i = 0; i < KEY_COUNT; i++)
+    {
+      // 如果第i个键是被更改的
+      if ((prevKey >> i) & 0x01)
+      {
+#ifdef HAS_MOTOR
+        // 如果第i个键是被更改的，并且这个操作是激活
+        if ((activeKey >> i) & 0x01)
+        {
+          activeMotor(5000);
+        }
+#endif
+        usbReleaseAll();
+        switch (cfg->keyConfig[i].mode)
+        {
+        // 标准键盘
+        case Keyboard:
+          ctrlKey = 0;
+          for (j = 0; j < KEY_COUNT; j++)
+          {
+            if (cfg->keyConfig[j].mode == Keyboard)
+            {
+              if ((activeKey >> j) & 0x01)
+              {
+                ctrlKey |= cfg->keyConfig[j].codeLH;
+                usbSetKeycode(j + 2, cfg->keyConfig[j].codeLL);
+              }
+            }
+          }
+
+          usbSetKeycode(0, 1); // 报表位0设置为1，即标准键盘
+          usbSetKeycode(1, ctrlKey);
+
+          usbPushKeydata(); // 发送 HID1 数据包
+          break;
+        // 多媒体按键
+        case Media:
+          for (j = 0; j < KEY_COUNT; j++)
+          {
+            if (cfg->keyConfig[j].mode == Media)
+            {
+              if ((activeKey >> j) & 0x01)
+              {
+                usbSetKeycode(2, cfg->keyConfig[j].codeLH);
+                usbSetKeycode(1, cfg->keyConfig[j].codeLL);
+                break;
+              }
+            }
+          }
+          usbSetKeycode(0, 2); // 报表位0设置为2，即多媒体键盘
+
+          usbPushKeydata(); // 发送 HID1 数据包
+          break;
+        // 鼠标
+        case Mouse:
+
+          ctrlKey = 0;
+          for (j = 0; j < KEY_COUNT; j++)
+          {
+            if (cfg->keyConfig[j].mode == Mouse)
+            {
+              if ((activeKey >> j) & 0x01)
+              {
+                ctrlKey |= cfg->keyConfig[j].codeHL;
+              }
+            }
+          }
+
+          usbSetMousecode(0, 1); // 报表位0设置为1，即标准鼠标
+
+          usbSetMousecode(1, ctrlKey); // 鼠标操作
+
+          // 如果第i个键是被更改的，并且这个操作是激活
+          // 因为是相对输入报表，所以只输入一次
+          if ((activeKey >> i) & 0x01)
+          {
+            j = (activeKey >> i) & 0x01;
+            usbSetMousecode(2, cfg->keyConfig[j].codeLH); // 鼠标X位移
+            usbSetMousecode(3, cfg->keyConfig[j].codeLL); // 鼠标Y位移
+            usbSetMousecode(4, cfg->keyConfig[j].codeHH); // 鼠标滚轮位移
+          }
+
+          usbPushMousedata();
+
+          break;
+        // 手柄按钮 及 手柄摇杆
+        case GamepadButton:
+
+          controllerKeyH = 0;
+          controllerKeyL = 0;
+          for (j = 0; j < KEY_COUNT; j++)
+          {
+            if (cfg->keyConfig[j].mode == GamepadButton)
+            {
+              if ((activeKey >> j) & 0x01)
+              {
+                controllerKeyH |= (cfg->keyConfig[j].codeLH);
+                controllerKeyL |= (cfg->keyConfig[j].codeLL);
+              }
+            }
+          }
+
+          usbSetKeycode(0, 3); // 报表位0设置为3，即游戏手柄
+
+          usbSetKeycode(1, controllerKeyH);
+          usbSetKeycode(2, controllerKeyL);
+
+          usbSetKeycode(3, 0x00);
+          usbSetKeycode(4, 0x00);
+          usbSetKeycode(5, 0x00);
+          usbSetKeycode(6, 0x00);
+
+          usbPushKeydata(); // 发送 HID1 数据包
+          break;
+        default:
+          break;
+        }
+      }
+    }
+    prevKey = activeKey;
+  }
+}
 
 void main()
 {
-  uint8_t i, j;
-
   sysClockConfig();
   delay_ms(20);
 
@@ -61,7 +195,7 @@ void main()
 #endif
 
   sysLoadConfig();
-  SysConfig *cfg = sysGetConfig();
+  cfg = sysGetConfig();
 
   usbDevInit();
   debounceInit();
@@ -79,6 +213,7 @@ void main()
   sysMsCounter = 0;
   while (1)
   {
+    // 定时器毫秒区间
     while (sysMsCounter--)
     {
 #ifdef HAS_MOTOR
@@ -88,135 +223,11 @@ void main()
       // rgbPush();
     }
 
-    activeKey = 0;
-    for (i = 0; i < KEY_COUNT; i++)
+    if (hasHIDData())
     {
-      activeKey <<= 1;
-      activeKey |= isKeyActive(i);
+      hid_run();
     }
-    if (prevKey != activeKey)
-    {
-      prevKey ^= activeKey;
-      for (i = 0; i < KEY_COUNT; i++)
-      {
-        // 如果第i个键是被更改的
-        if ((prevKey >> i) & 0x01)
-        {
-#ifdef HAS_MOTOR
-          // 如果第i个键是被更改的，并且这个操作是激活
-          if ((activeKey >> i) & 0x01)
-          {
-            activeMotor(5000);
-          }
-#endif
-          usbReleaseAll();
-          switch (cfg->keyConfig[i].mode)
-          {
-          // 标准键盘
-          case Keyboard:
-            ctrlKey = 0;
-            for (j = 0; j < KEY_COUNT; j++)
-            {
-              if (cfg->keyConfig[j].mode == Keyboard)
-              {
-                if ((activeKey >> j) & 0x01)
-                {
-                  ctrlKey |= cfg->keyConfig[j].codeLH;
-                  usbSetKeycode(j + 2, cfg->keyConfig[j].codeLL);
-                }
-              }
-            }
 
-            usbSetKeycode(0, 1); // 报表位0设置为1，即标准键盘
-            usbSetKeycode(1, ctrlKey);
-
-            usbPushKeydata(); // 发送 HID1 数据包
-            break;
-          // 多媒体按键
-          case Media:
-            for (j = 0; j < KEY_COUNT; j++)
-            {
-              if (cfg->keyConfig[j].mode == Media)
-              {
-                if ((activeKey >> j) & 0x01)
-                {
-                  usbSetKeycode(2, cfg->keyConfig[j].codeLH);
-                  usbSetKeycode(1, cfg->keyConfig[j].codeLL);
-                  break;
-                }
-              }
-            }
-            usbSetKeycode(0, 2); // 报表位0设置为2，即多媒体键盘
-
-            usbPushKeydata(); // 发送 HID1 数据包
-            break;
-          // 鼠标
-          case Mouse:
-
-            ctrlKey = 0;
-            for (j = 0; j < KEY_COUNT; j++)
-            {
-              if (cfg->keyConfig[j].mode == Mouse)
-              {
-                if ((activeKey >> j) & 0x01)
-                {
-                  ctrlKey |= cfg->keyConfig[j].codeHL;
-                }
-              }
-            }
-
-            usbSetMousecode(0, 1); // 报表位0设置为1，即标准鼠标
-
-            usbSetMousecode(1, ctrlKey); // 鼠标操作
-
-            // 如果第i个键是被更改的，并且这个操作是激活
-            // 因为是相对输入报表，所以只输入一次
-            if ((activeKey >> i) & 0x01)
-            {
-              j = (activeKey >> i) & 0x01;
-              usbSetMousecode(2, cfg->keyConfig[j].codeLH); // 鼠标X位移
-              usbSetMousecode(3, cfg->keyConfig[j].codeLL); // 鼠标Y位移
-              usbSetMousecode(4, cfg->keyConfig[j].codeHH); // 鼠标滚轮位移
-            }
-
-            usbPushMousedata();
-
-            break;
-          // 手柄按钮 及 手柄摇杆
-          case GamepadButton:
-
-            controllerKeyH = 0;
-            controllerKeyL = 0;
-            for (j = 0; j < KEY_COUNT; j++)
-            {
-              if (cfg->keyConfig[j].mode == GamepadButton)
-              {
-                if ((activeKey >> j) & 0x01)
-                {
-                  controllerKeyH |= (cfg->keyConfig[j].codeLH);
-                  controllerKeyL |= (cfg->keyConfig[j].codeLL);
-                }
-              }
-            }
-
-            usbSetKeycode(0, 3); // 报表位0设置为3，即游戏手柄
-
-            usbSetKeycode(1, controllerKeyH);
-            usbSetKeycode(2, controllerKeyL);
-
-            usbSetKeycode(3, 0x00);
-            usbSetKeycode(4, 0x00);
-            usbSetKeycode(5, 0x00);
-            usbSetKeycode(6, 0x00);
-
-            usbPushKeydata(); // 发送 HID1 数据包
-            break;
-          default:
-            break;
-          }
-        }
-      }
-      prevKey = activeKey;
-    }
+    checkKey();
   }
 }

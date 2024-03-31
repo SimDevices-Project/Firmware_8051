@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "bsp.h"
+#include "sys.h"
 
 /*******************************************************************************
 Input channel as below:
@@ -38,16 +39,16 @@ Input channel as below:
 #define		CH5				(BIT5)
 #define		CH_FREE			(0x07)						/* Enable touch input, no channel is selected. */
 
-#define		TH_VALUE		(0x140)
+// #define		TH_VALUE		(0x140)
 #define		SAMPLE_TIMES	(0x04)
 
 #ifdef TOUCH_COUNT
 /* External variable and function */ 
-extern 		uint16_t 		Key_FreeBuf[TOUCH_COUNT];
+// extern 		uint16_t 		Key_FreeBuf[TOUCH_COUNT];
 extern		uint8_t			Touch_State;			
 
 extern uint8_t TK_Init( uint8_t channel , uint8_t queryFreq, uint8_t ie );
-extern void TK_GetKeyFreeBuff();
+// extern void TK_GetKeyFreeBuff();
 extern uint8_t TK_SelectChannel( uint8_t ch );
 extern uint8_t TK_Measure( void )	;
 #endif

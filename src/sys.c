@@ -185,6 +185,8 @@ uint8_t hexToChar(uint8_t bHex) {
 
 #define KEY_CFG(i) (sysConfig.keyConfig[i])
 #define LED_CFG(i) (sysConfig.ledConfig[i])
+#define TCH_CFG(i) (sysConfig.touchConfig[i])
+
 
 /*
  * 加载系统配置
@@ -204,6 +206,16 @@ void sysLoadConfig() {
     KEY_CFG(i).codeLL = romRead8i(point++);
   }
 
+
+#if TOUCH_COUNT > 0
+  for (i = 0; i < TOUCH_COUNT; i++) {
+    TCH_CFG(i).freeBuf = romRead16i(point++);
+    point++;
+    TCH_CFG(i).sensitivity = romRead16i(point++);
+    point++;
+  }
+#endif
+
 #if LED_COUNT > 0
   for (i = 0; i < LED_COUNT; i++) {
     LED_CFG(i).mode = romRead8i(point++);
@@ -214,6 +226,7 @@ void sysLoadConfig() {
     LED_CFG(i).trigger = (LEDTriggerMode)romRead8i(point++);
   }
 #endif
+
 }
 
 /*

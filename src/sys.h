@@ -74,6 +74,15 @@ typedef struct
     // uint16_t length;
 } KeyConfig;
 
+/**
+ * @brief 触摸灵敏度配置结构体
+ */
+typedef struct
+{
+    uint16_t freeBuf;
+    uint16_t sensitivity;
+} TouchConfig;
+
 typedef enum // 灯光模式
 {
     AlwaysOn = 0x00,      // 不做管理，常亮
@@ -99,8 +108,9 @@ typedef struct
  */
 typedef struct
 {
-    KeyConfig keyConfig[KEY_COUNT];
-    LEDConfig ledConfig[LED_COUNT];
+    KeyConfig   keyConfig[KEY_COUNT];
+    TouchConfig touchConfig[TOUCH_COUNT];
+    LEDConfig   ledConfig[LED_COUNT];
 } SysConfig;
 
 // uint32_t sysGetRGB(uint16_t color, uint8_t extend);

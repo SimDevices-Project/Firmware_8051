@@ -2,6 +2,9 @@
 #include "ch552.h"
 
 #ifdef TOUCH_COUNT
+
+extern SysConfig* cfg;
+
 /*******************************************************************************
 Input channel as below:
 
@@ -17,13 +20,13 @@ Input channel as below:
 	1		|	1		|	1		|	Enable touch core	| no channel
 	
 *******************************************************************************/
-uint8_t TK_Code[TOUCH_COUNT] = {
+uint8_c TK_Code[TOUCH_COUNT] = {
     /* Arrange the input channel */
     0x04, 0x03, /* CH3 CH2 */
     0x05, 0x06  /* CH4 CH5 */
 };
 
-uint16_t Key_FreeBuf[TOUCH_COUNT];
+// uint16_t Key_FreeBuf[TOUCH_COUNT];
 // uint16_t  Key_DataBuf[TOUCH_COUNT];
 uint8_t Touch_State = 0xFF; /* BIT6 & BIT7 reserved, other bit means touch state */
 
@@ -46,29 +49,29 @@ uint8_t TK_SelectChannel(uint8_t ch) {
  * Function Name  : TK_GetKeyFreeBuff
  * Description    : GetKeyFreeBuff, DO NOT get Key_FreeBuf in Mass Production.
  *******************************************************************************/
-void TK_GetKeyFreeBuff() {
-  uint8_t i, j;
-  uint16_t sum;
-  uint16_t OverTime;
-  /* Get Key_FreeBuf. Save the data in flash or macro define. */
-  /* DO NOT get Key_FreeBuf in Mass Production. */
-  for (i = 0; i < TOUCH_COUNT; i++) {
-    sum = 0;
-    j = SAMPLE_TIMES;
-    TK_SelectChannel(i);
-    //		TKEY_CTRL |= TK_Code[i];
-    while (j--) {
-      OverTime = 0;
-      while ((TKEY_CTRL & bTKC_IF) == 0) {
-        if (++OverTime == 0) {
-          // return 0xFF;
-        }
-      }
-      sum += TKEY_DAT; /*  */
-    }
-    Key_FreeBuf[i] = sum / SAMPLE_TIMES;
-  }
-}
+// void TK_GetKeyFreeBuff() {
+//   uint8_t i, j;
+//   uint16_t sum;
+//   uint16_t OverTime;
+//   /* Get Key_FreeBuf. Save the data in flash or macro define. */
+//   /* DO NOT get Key_FreeBuf in Mass Production. */
+//   for (i = 0; i < TOUCH_COUNT; i++) {
+//     sum = 0;
+//     j = SAMPLE_TIMES;
+//     TK_SelectChannel(i);
+//     //		TKEY_CTRL |= TK_Code[i];
+//     while (j--) {
+//       OverTime = 0;
+//       while ((TKEY_CTRL & bTKC_IF) == 0) {
+//         if (++OverTime == 0) {
+//           // return 0xFF;
+//         }
+//       }
+//       sum += TKEY_DAT; /*  */
+//     }
+//     Key_FreeBuf[i] = sum / SAMPLE_TIMES;
+//   }
+// }
 
 /*******************************************************************************
 * Function Name  : TK_Init
@@ -91,7 +94,7 @@ uint8_t TK_Init(uint8_t channel, uint8_t queryFreq, uint8_t ie) {
     TKEY_CTRL |= bTKC_2MS;
   }
 
-  TK_GetKeyFreeBuff();
+  // TK_GetKeyFreeBuff();
 
   if (ie != 0) /* Enable interrupt ?  */
   {
@@ -136,6 +139,9 @@ uint8_t TK_Init(uint8_t channel, uint8_t queryFreq, uint8_t ie) {
 //   return 0;
 // }
 
+#define TOUCH_KEY_FREEBUF(i) (cfg->touchConfig[i].freeBuf)
+#define TOUCH_KEY_SENSITIVITY(i) (cfg->touchConfig[i].sensitivity)
+
 /*******************************************************************************
  * Function Name  : TK_int_ISR
  * Description    : Touch key interrupt routing for touch key scan.
@@ -145,7 +151,7 @@ uint8_t TK_Init(uint8_t channel, uint8_t queryFreq, uint8_t ie) {
 void __TK_int_ISR() __interrupt INT_NO_TKEY __using(1) {
   static uint8_t ch = 0;
 
-  if (TKEY_DAT < (Key_FreeBuf[ch] - TH_VALUE)) {
+  if (TKEY_DAT < (TOUCH_KEY_FREEBUF(ch) - TOUCH_KEY_SENSITIVITY(ch))) {
     Touch_State &= ~(1 << (TK_Code[ch] - 1)); // Active
   } else {
     Touch_State |= 1 << (TK_Code[ch] - 1); // Not active
