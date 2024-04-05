@@ -148,6 +148,34 @@ const uint8_c MouseRepDesc[] = {
     0x81, 0x02,       //     Input (Data, Var, Abs)
     0xC0,             //   End Collection
     0xC0,             // End Collection
+    // Integrared Radial Controller TLC
+    0x05, 0x01,       // Usage Page (Generic Desktop Ctrls)
+    0x09, 0x0e,       // Usage (Aystem Multi-Axis Controller)
+    0xA1, 0x01,       // Collection (Application)
+    0x85, 0x03,       //   Report ID (3)
+    0x05, 0x0d,       //   Usage Page (Digitizer)
+    0x09, 0x21,       //   Usage (Puck)
+    0xA1, 0x00,       //   Collection (Physical)
+    0x05, 0x09,       //     Usage Page (Button)
+    0x09, 0x01,       //     Usage Minimum (Button 1)
+    0x95, 0x01,       //     Report Count (1)
+    0x75, 0x01,       //     Report Size (1)
+    0x15, 0x00,       //     Logical Minimum (0)
+    0x25, 0x01,       //     Logical Maximum (1)
+    0x81, 0x02,       //     Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+    0x05, 0x01,       //     Usage Page (Generic Desktop Ctrls)
+    0x09, 0x37,       //     Usage (Dial)
+    0x95, 0x01,       //     Report Count (1)
+    0x75, 0x0f,       //     Report Size (15)
+    0X55, 0X00,       //     Unit Exponent (0)
+    0X65, 0X14,       //     Unit (Degress, English Rotation)
+    0X36, 0X98, 0xFE, //     Physical Minimum (-360)
+    0X46, 0X68, 0X01, //     Physical Maximum (360)
+    0x16, 0X98, 0XFE, //     Logical Minimum (-360)
+    0x26, 0X68, 0X01, //     Logical Maximum (360)
+    0x81, 0X06,       //     Input (Data,Var,Rel,No Wrap,Linear,Preferred State,No Null Position)
+    0xC0,             //   End Collection
+    0xC0,             // End Collection
 
 };
 const uint8_c CustomRepDesc[] = {
@@ -395,15 +423,15 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
           case USB_GET_DESCRIPTOR:
             switch (UsbSetupBuf->wValueH)
             {
-            case 1: // 设备描述符
+            case USB_DESCR_TYP_DEVICE: // 设备描述符
               pDescr = (uint8_t *)(&usbDevDesc[0]);
               len    = sizeof(usbDevDesc);
               break;
-            case 2: // 配置描述符
+            case USB_DESCR_TYP_CONFIG: // 配置描述符
               pDescr = (uint8_t *)(&usbCfgDesc[0]);
               len    = sizeof(usbCfgDesc);
               break;
-            case 3: // 字符串描述符
+            case USB_DESCR_TYP_STRING: // 字符串描述符
               switch (UsbSetupBuf->wValueL)
               {
               case 0:
@@ -445,7 +473,7 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 break;
               }
               break;
-            case 0x22: // 报表描述符
+            case USB_DESCR_TYP_REPORT: // 报表描述符
               switch (UsbSetupBuf->wIndexL)
               {
               case 0:
@@ -594,6 +622,32 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
             len = 0xFF; // 操作失败
             break;
           }
+        }
+        else if ((UsbSetupBuf->bRequestType & USB_REQ_TYP_MASK) == USB_REQ_TYP_CLASS)
+        {
+            // Device -> Host
+            if (UsbSetupBuf->bRequestType & USB_REQ_TYP_IN)
+            {
+              switch (SetupReqCode) {
+                case HID_GET_REPORT:
+                  break;
+                case HID_GET_IDLE:
+                  break;
+                case HID_GET_PROTOCOL:
+                  break;
+              }
+            }
+            // Host -> Device
+            else{
+              switch (SetupReqCode) {
+                case HID_SET_REPORT:
+                  break;
+                case HID_SET_IDLE:
+                  break;
+                case HID_SET_PROTOCOL:
+                  break;
+              }
+            }
         }
         else
         { /* 非标准请求 */

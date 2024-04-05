@@ -206,7 +206,7 @@ void main()
   delay_ms(100);
 
   usbReleaseAll();
-  requestHIDData();
+  // requestHIDData();
 
   sysTickConfig();
 

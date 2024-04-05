@@ -1,6 +1,9 @@
 #include "hidrunner.h"
 
+extern __bit HIDIN;
+
 void hid_run(){
+  HIDIN = 0;
   UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK; // 恢复正常响应指令
 }
 
