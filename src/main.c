@@ -1,6 +1,7 @@
 #include "bsp.h"
 #include "ch552.h"
 #include "debounce.h"
+#include "hidrunner.h"
 #include "rgb.h"
 #include "rom.h"
 #include "sys.h"
@@ -10,12 +11,12 @@
 #include "motor.h"
 #endif
 
-#ifdef TOUCH_COUNT
+#if TOUCH_COUNT > 0
 #include "touchkey.h"
 #endif
 
 void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1); // USB中断定义
-#ifdef TOUCH_COUNT
+#if TOUCH_COUNT > 0
 void __TK_int_ISR() __interrupt(INT_NO_TKEY) __using(1); // TouchKey中断定义
 #endif
 
@@ -37,7 +38,7 @@ uint16_t activeKey;   // 最近一次扫描时的按键激活状态记录
 uint8_t ctrlKey;
 
 /** @brief 游戏手柄报表，16个按键，16比特 */
-uint8_t controllerKeyH = 0, controllerKeyL = 0;
+uint8_t    controllerKeyH = 0, controllerKeyL = 0;
 SysConfig *cfg;
 
 void checkKey()
@@ -189,7 +190,7 @@ void main()
   motorInit();
 #endif
 
-#ifdef TOUCH_COUNT
+#if TOUCH_COUNT
   TK_Init(BIT4 | BIT5 | BIT6 | BIT7, 0, 1); /* Choose TIN2, TIN3, TIN4, TIN5 for touchkey input. enable interrupt. */
   TK_SelectChannel(0);                      /* NOTICE: ch is not compatible with the IO actually. */
 #endif

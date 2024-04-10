@@ -42,15 +42,15 @@ Input channel as below:
 // #define		TH_VALUE		(0x140)
 #define		SAMPLE_TIMES	(0x04)
 
-#ifdef TOUCH_COUNT
+#if TOUCH_COUNT > 0
 /* External variable and function */ 
 // extern 		uint16_t 		Key_FreeBuf[TOUCH_COUNT];
 extern		uint8_t			Touch_State;			
 
-extern uint8_t TK_Init( uint8_t channel , uint8_t queryFreq, uint8_t ie );
-// extern void TK_GetKeyFreeBuff();
-extern uint8_t TK_SelectChannel( uint8_t ch );
-extern uint8_t TK_Measure( void )	;
+uint8_t TK_Init( uint8_t channel , uint8_t queryFreq, uint8_t ie );
+// void TK_GetKeyFreeBuff();
+uint8_t TK_SelectChannel( uint8_t ch );
+uint8_t TK_Measure( void )	;
 #endif
 
 #endif

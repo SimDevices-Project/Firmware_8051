@@ -1,7 +1,7 @@
 #include "touchkey.h"
 #include "ch552.h"
 
-#ifdef TOUCH_COUNT
+#if TOUCH_COUNT > 0
 
 extern SysConfig* cfg;
 

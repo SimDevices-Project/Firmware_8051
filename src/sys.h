@@ -109,8 +109,12 @@ typedef struct
 typedef struct
 {
     KeyConfig   keyConfig[KEY_COUNT];
+#if TOUCH_COUNT > 0
     TouchConfig touchConfig[TOUCH_COUNT];
+#endif
+#if LED_COUNT > 0
     LEDConfig   ledConfig[LED_COUNT];
+#endif
 } SysConfig;
 
 // uint32_t sysGetRGB(uint16_t color, uint8_t extend);

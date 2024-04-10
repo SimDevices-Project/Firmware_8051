@@ -3,7 +3,7 @@
 #include <string.h>
 #include "sys.h"
 
-#ifdef TOUCH_COUNT
+#if TOUCH_COUNT > 0
 #include "touchkey.h"
 #endif
 
@@ -34,11 +34,12 @@ uint8_t i = 0;
  * 更新计算去抖
  */
 void debounceUpdate() {
-#ifndef TOUCH_COUNT
+#if TOUCH_COUNT == 0
 #if defined(SIM_KEY)
   __debounce_pin(1);
 #else
-  __debounce_pin(1) __debounce_pin(2)
+  __debounce_pin(1);
+  __debounce_pin(2);
 #if (defined(SIMPAD_V2_AE) || defined(SIMPAD_V2))
   __debounce_pin(3);
   __debounce_pin(4);
