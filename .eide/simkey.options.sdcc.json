@@ -14,8 +14,7 @@
     ],
     "global": {
         "device": "mcs51",
-        "optimize-type": "speed",
-        "use-non-free": false,
+        "optimize-type": "balanced",
         "device-options": {
             "mcs51": [
                 "--model-small",

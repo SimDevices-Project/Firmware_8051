@@ -1,0 +1,38 @@
+{
+    "version": 3,
+    "beforeBuildTasks": [],
+    "afterBuildTasks": [
+        {
+            "name": "clean",
+            "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+        },
+        {
+            "name": "output bin file",
+            "command": "\"${CompilerFolder}\\makebin.exe\" -p < \"${OutDir}\\${targetName}.ihx\" > \"${OutDir}\\${targetName}.bin\"",
+            "disable": false
+        }
+    ],
+    "global": {
+        "device": "mcs51",
+        "optimize-type": "balanced",
+        "device-options": {
+            "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+            ]
+        }
+    },
+    "c/cpp-compiler": {
+        "language-c": "c99",
+        "misc-controls": "--disable-warning 182"
+    },
+    "asm-compiler": {},
+    "linker": {
+        "$mainFileName": "main",
+        "output-format": "hex",
+        "misc-controls": "--xram-loc 0x00C8 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0338"
+    }
+}

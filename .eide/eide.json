@@ -20,26 +20,124 @@
     "folders": []
   },
   "targets": {
-    "Debug": {
+    "SimPad_2_AE": {
       "excludeList": [],
       "toolchain": "SDCC",
       "compileConfig": {
         "options": "null"
       },
-      "uploader": "stcgal",
+      "uploader": "Custom",
       "uploadConfig": {
-        "bin": ".\\build\\Debug\\SimPad_Firmware_8051_re.hex",
-        "eepromImgPath": "null",
-        "options": ".eide/stc.flash.json",
-        "extraOptions": ""
+        "bin": "",
+        "commandLine": "",
+        "eraseChipCommand": ""
       },
-      "uploadConfigMap": {},
+      "uploadConfigMap": {
+        "stcgal": {
+          "bin": "${OutDir}\\${targetName}.hex",
+          "eepromImgPath": "null",
+          "options": ".eide/stc.flash.json",
+          "extraOptions": ""
+        }
+      },
       "custom_dep": {
         "name": "default",
         "incList": [],
         "libList": [],
         "sourceDirList": [],
-        "defineList": []
+        "defineList": [
+          "SIMPAD_V2_AE"
+        ]
+      }
+    },
+    "SimPad_Nano_AE": {
+      "excludeList": [],
+      "toolchain": "SDCC",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "Custom",
+      "uploadConfig": {
+        "bin": "",
+        "commandLine": "",
+        "eraseChipCommand": ""
+      },
+      "uploadConfigMap": {
+        "stcgal": {
+          "bin": "${OutDir}\\${targetName}.hex",
+          "eepromImgPath": "null",
+          "options": ".eide/stc.flash.json",
+          "extraOptions": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": [
+          "SIMPAD_NANO_AE"
+        ]
+      }
+    },
+    "SimKey": {
+      "excludeList": [],
+      "toolchain": "SDCC",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "Custom",
+      "uploadConfig": {
+        "bin": "",
+        "commandLine": "",
+        "eraseChipCommand": ""
+      },
+      "uploadConfigMap": {
+        "stcgal": {
+          "bin": "${OutDir}\\${targetName}.hex",
+          "eepromImgPath": "null",
+          "options": ".eide/stc.flash.json",
+          "extraOptions": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": [
+          "SIM_KEY"
+        ]
+      }
+    },
+    "SimPad_Touch": {
+      "excludeList": [],
+      "toolchain": "SDCC",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "Custom",
+      "uploadConfig": {
+        "bin": "",
+        "commandLine": "",
+        "eraseChipCommand": ""
+      },
+      "uploadConfigMap": {
+        "stcgal": {
+          "bin": "${OutDir}\\${targetName}.hex",
+          "eepromImgPath": "null",
+          "options": ".eide/stc.flash.json",
+          "extraOptions": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [],
+        "libList": [],
+        "sourceDirList": [],
+        "defineList": [
+          "SIMPAD_TOUCH"
+        ]
       }
     }
   }
