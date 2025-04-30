@@ -22,7 +22,7 @@
 /* 特性支持列表 */
 #ifndef __FEATURE_HARDWARE_LIST_
 #define __FEATURE_HARDWARE_LIST_
-#define UNUSED 0x80             //
+#define FEATURE_MAGNETKEY 0x80  // 霍尔按键
 #define FEATURE_KEY 0x40        // 物理按键
 #define FEATURE_TOUCH_KEY 0x20  // 触摸按键
 #define FEATURE_LED_KEY 0x10    // 按键全彩灯
@@ -113,6 +113,22 @@ __sbit __at(0xB7) P37;
 
 #define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_MOUSE | FEATURE_BASIC_MEDIA | FEATURE_BASIC_GAMEPAD | FEATURE_BASIC_ABSOLUTE // 特性支持，高8位
 #define FEATURE_NORMAL FEATURE_MACRO | FEATURE_EXTEND                                                                                     // 特性支持，低8位
+
+#define FREQ_SYS 24000000
+#elif defined(SIMPAD_V2_MAGNET)
+#define BT1 P11
+#define BT2 P32
+#define BT3 P31
+#define BT4 P30
+#define BT5 P33
+#define KEY_COUNT 5
+#define TOUCH_COUNT 0
+#define LED P12
+#define LED_COUNT 4
+
+#define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_MOUSE | FEATURE_BASIC_MEDIA | FEATURE_BASIC_GAMEPAD | FEATURE_BASIC_ABSOLUTE // 特性支持，高8位
+#define FEATURE_NORMAL FEATURE_MACRO | FEATURE_EXTEND
+#define FEATURE_HARDWARE (FEATURE_MAGNETKEY | FEATURE_KEY | FEATURE_LED_KEY | FEATURE_LED_NORMAL)
 
 #define FREQ_SYS 24000000
 #elif defined(SIMPAD_NANO_AE)
@@ -211,6 +227,7 @@ __sbit __at(0xB7) P37;
  * 00 06 SimPad v2 - Year Edition
  * 00 07 SimPad Nano - Year Edition
  * 00 08 SimKey
+ * 00 0A SimPad v2 - Magnet
  * 00 A0 SimPad Touch
  * 00 FF SimPad Boot
  */
@@ -232,6 +249,9 @@ __sbit __at(0xB7) P37;
 #elif defined(SIMPAD_NANO)
 #define PRODUCT_ID_H 0x00
 #define PRODUCT_ID_L 0x04
+#elif defined(SIMPAD_V2_MAGNET)
+#define PRODUCT_ID_H 0x00
+#define PRODUCT_ID_L 0x0A
 #else
 #define PRODUCT_ID_H 0x00
 #define PRODUCT_ID_L 0x00

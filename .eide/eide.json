@@ -13,7 +13,7 @@
     "lastTelTime": 1610609776058,
     "lastBuildTime": 1610940059942
   },
-  "version": "3.3",
+  "version": "3.5",
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
@@ -44,10 +44,49 @@
         "name": "default",
         "incList": [],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "SIMPAD_V2_AE"
         ]
+      },
+      "builderOptions": {
+        "SDCC": {
+          "version": 3,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [
+            {
+              "name": "clean",
+              "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+            },
+            {
+              "name": "output bin file",
+              "command": "\"${CompilerFolder}\\makebin.exe\" -p < \"${OutDir}\\${targetName}.ihx\" > \"${OutDir}\\${targetName}.bin\"",
+              "disable": false
+            }
+          ],
+          "global": {
+            "device": "mcs51",
+            "optimize-type": "balanced",
+            "device-options": {
+              "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+              ]
+            }
+          },
+          "c/cpp-compiler": {
+            "language-c": "c99",
+            "misc-controls": "--disable-warning 182"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "$mainFileName": "main",
+            "output-format": "hex",
+            "misc-controls": "--xram-loc 0x00C8 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0338"
+          }
+        }
       }
     },
     "SimPad_Nano_AE": {
@@ -74,10 +113,49 @@
         "name": "default",
         "incList": [],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "SIMPAD_NANO_AE"
         ]
+      },
+      "builderOptions": {
+        "SDCC": {
+          "version": 3,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [
+            {
+              "name": "clean",
+              "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+            },
+            {
+              "name": "output bin file",
+              "command": "\"${CompilerFolder}\\makebin.exe\" -p < \"${OutDir}\\${targetName}.ihx\" > \"${OutDir}\\${targetName}.bin\"",
+              "disable": false
+            }
+          ],
+          "global": {
+            "device": "mcs51",
+            "optimize-type": "balanced",
+            "device-options": {
+              "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+              ]
+            }
+          },
+          "c/cpp-compiler": {
+            "language-c": "c99",
+            "misc-controls": "--disable-warning 182"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "$mainFileName": "main",
+            "output-format": "hex",
+            "misc-controls": "--xram-loc 0x00C8 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0338"
+          }
+        }
       }
     },
     "SimKey": {
@@ -104,10 +182,49 @@
         "name": "default",
         "incList": [],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "SIM_KEY"
         ]
+      },
+      "builderOptions": {
+        "SDCC": {
+          "version": 3,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [
+            {
+              "name": "clean",
+              "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+            },
+            {
+              "name": "output bin file",
+              "command": "\"${CompilerFolder}\\makebin.exe\" -p < \"${OutDir}\\${targetName}.ihx\" > \"${OutDir}\\${targetName}.bin\"",
+              "disable": false
+            }
+          ],
+          "global": {
+            "device": "mcs51",
+            "optimize-type": "balanced",
+            "device-options": {
+              "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+              ]
+            }
+          },
+          "c/cpp-compiler": {
+            "language-c": "c99",
+            "misc-controls": "--disable-warning 182"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "$mainFileName": "main",
+            "output-format": "hex",
+            "misc-controls": "--xram-loc 0x00C8 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0338"
+          }
+        }
       }
     },
     "SimPad_Touch": {
@@ -134,10 +251,118 @@
         "name": "default",
         "incList": [],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "SIMPAD_TOUCH"
         ]
+      },
+      "builderOptions": {
+        "SDCC": {
+          "version": 3,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [
+            {
+              "name": "clean",
+              "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+            },
+            {
+              "name": "output bin file",
+              "command": "\"${CompilerFolder}\\makebin.exe\" -p < \"${OutDir}\\${targetName}.ihx\" > \"${OutDir}\\${targetName}.bin\"",
+              "disable": false
+            }
+          ],
+          "global": {
+            "device": "mcs51",
+            "optimize-type": "balanced",
+            "device-options": {
+              "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+              ]
+            }
+          },
+          "c/cpp-compiler": {
+            "language-c": "c99",
+            "misc-controls": "--disable-warning 182"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "$mainFileName": "main",
+            "output-format": "hex",
+            "misc-controls": "--xram-loc 0x00C8 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0338"
+          }
+        }
+      }
+    },
+    "SimPad_2_Magnet": {
+      "excludeList": [],
+      "toolchain": "SDCC",
+      "compileConfig": {
+        "options": "null"
+      },
+      "uploader": "Custom",
+      "uploadConfig": {
+        "bin": "",
+        "commandLine": "",
+        "eraseChipCommand": ""
+      },
+      "uploadConfigMap": {
+        "stcgal": {
+          "bin": "${OutDir}\\${targetName}.hex",
+          "eepromImgPath": "null",
+          "options": ".eide/stc.flash.json",
+          "extraOptions": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [],
+        "libList": [],
+        "defineList": [
+          "SIMPAD_V2_MAGNET"
+        ]
+      },
+      "builderOptions": {
+        "SDCC": {
+          "version": 3,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [
+            {
+              "name": "clean",
+              "command": "cd \"${OutDir}\" && del *.sym *.cdb *.adb *._*"
+            },
+            {
+              "name": "output bin file",
+              "command": "\"${CompilerFolder}\\makebin.exe\" -p < \"${OutDir}\\${targetName}.ihx\" > \"${OutDir}\\${targetName}.bin\"",
+              "disable": false
+            }
+          ],
+          "global": {
+            "device": "mcs51",
+            "optimize-type": "balanced",
+            "device-options": {
+              "mcs51": [
+                "--model-small",
+                "--iram-size 256",
+                "--code-size 0x3000",
+                "--xram-size 1024",
+                "--opt-code-size"
+              ]
+            }
+          },
+          "c/cpp-compiler": {
+            "language-c": "c11",
+            "misc-controls": "--disable-warning 182"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "$mainFileName": "main",
+            "output-format": "hex",
+            "misc-controls": "--xram-loc 0x00C8 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0338"
+          }
+        }
       }
     }
   }

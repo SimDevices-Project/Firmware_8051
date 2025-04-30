@@ -179,6 +179,11 @@ void checkKey()
 void main()
 {
   sysClockConfig();
+
+#ifdef SIMPAD_V2_MAGNET
+  USB_C_CTRL |= bUCC2_PD_EN | bUCC1_PD_EN;
+#endif
+
   delay_ms(20);
 
 #if defined(HAS_ROM)
